@@ -151,14 +151,36 @@ function FileTable() {
         </div>
       ) : (
         <div className={styles.tableScroll}>
+          <div className={styles.sectionHeader} role="presentation">
+            <span className={styles.sectionLabel}>Unprocessed</span>
+            <span className={styles.sectionCount}>{itemsToShow.length} files</span>
+          </div>
           <table className={styles.table}>
             <thead>
               <tr>
                 <th scope="col" className={styles.colCheck}>
                   <span className={styles.colHeader}>Select</span>
                 </th>
-                <th scope="col">
+                <th scope="col" className={styles.colName}>
                   <span className={styles.colHeader}>Filename</span>
+                </th>
+                <th scope="col" className={styles.colVer}>
+                  <span className={styles.colHeader}>Version</span>
+                </th>
+                <th scope="col" className={styles.colDate}>
+                  <span className={styles.colHeader}>Created</span>
+                </th>
+                <th scope="col" className={styles.colGlyphs}>
+                  <span className={styles.colHeader}>Glyphs</span>
+                </th>
+                <th scope="col" className={styles.colFeat}>
+                  <span className={styles.colHeader}>Feat.</span>
+                </th>
+                <th scope="col" className={styles.colSize}>
+                  <span className={styles.colHeader}>Size</span>
+                </th>
+                <th scope="col" className={styles.colType}>
+                  <span className={styles.colHeader}>Type</span>
                 </th>
                 <th scope="col">
                   <span className={styles.colHeader}>Family</span>
@@ -182,11 +204,24 @@ function FileTable() {
                 const displayStem = queuedName ? splitStemExt(queuedName).stem : defaultStem;
                 const family =
                   font.metadata?.preferredFamily ?? font.metadata?.familyName ?? font.name;
+                const version = font.metadata?.version ?? "—";
+                const glyphCount = font.glyphCount ?? font.misc?.glyphCount ?? 0;
+                const featCount = (font.features ?? []).length;
+                const sizeStr = font.fileData ? formatBytes(font.fileData.byteLength) : "—";
+                const typeBadgeKey = TYPE_BADGE_CLASS[font.format] ?? "typeOtf";
+                const typeLabel =
+                  font.format === "woff2"
+                    ? "WOFF2"
+                    : font.format === "woff"
+                      ? "WOFF"
+                      : font.format.toUpperCase();
                 const isSelected = selectedFontFilePath === filePath;
                 const inRename = isInRenameQueue(filePath);
                 const inRemoval = isInRemovalQueue(filePath);
                 const isDuplicateRow = isDuplicate(filePath, matchResults);
                 const isChecked = selectedFilePaths.has(filePath);
+                const matchedRecord = result?.matchedRecord;
+                const glyphHighlight = matchedRecord && glyphCount !== matchedRecord.glyphCount;
 
                 const rowClasses = [
                   isSelected ? styles.rowSelected : null,
@@ -232,6 +267,28 @@ function FileTable() {
                         aria-label={`Filename for ${fileName}`}
                       />
                       {ext ? <span className={styles.fnameExt}>{ext}</span> : null}
+                    </td>
+                    <td className={styles.cellVer}>
+                      <span className={styles.cv}>{version}</span>
+                    </td>
+                    <td className={styles.cellDate}>
+                      <span className={styles.cv}>—</span>
+                    </td>
+                    <td className={styles.cellGlyphs}>
+                      <span className={glyphHighlight ? `${styles.cv} ${styles.cvPos}` : styles.cv}>
+                        {glyphCount || "—"}
+                      </span>
+                    </td>
+                    <td className={styles.cellFeat}>
+                      <span className={styles.cv}>{featCount}</span>
+                    </td>
+                    <td className={styles.cellSize}>
+                      <span className={styles.cv}>{sizeStr}</span>
+                    </td>
+                    <td className={styles.cellType}>
+                      <span className={`${styles.typeBadge} ${styles[typeBadgeKey]}`}>
+                        {typeLabel}
+                      </span>
                     </td>
                     <td>{family}</td>
                     <td>

@@ -82,24 +82,18 @@ function DetailPanel() {
                 <div className={styles.tabCompare}>
                   <div className={styles.compareLeft}>
                     <div className={styles.cmpLabel}>
-                      Unprocessed <span className={styles.badgeLabel}>Selected</span>
+                      Unprocessed <span className={styles.badgeSelected}>Selected</span>
                     </div>
                     <div className={styles.cmpFilename}>{selectedFileName}</div>
-                    <CompareGrid font={selected.font} filePath={selected.filePath} />
+                    <CompareGrid font={selected.font} matchedRecord={matchedRecord} />
                   </div>
                   <div className={styles.compareRight}>
                     <div className={styles.cmpLabel}>
-                      Processed <span className={styles.badgeLabel}>Matched</span>
+                      Processed <span className={styles.badgeMatched}>Matched</span>
                     </div>
                     <div className={styles.cmpFilename}>{matchedRecord?.fileName ?? "—"}</div>
                     {matchedRecord ? (
-                      <MatchedSummary
-                        record={matchedRecord}
-                        unprocessedGlyphs={
-                          selected.font.glyphCount ?? selected.font.misc?.glyphCount ?? 0
-                        }
-                        unprocessedFeatures={(selected.font.features ?? []).length}
-                      />
+                      <MatchedSummary record={matchedRecord} />
                     ) : (
                       <p className={styles.muted}>No match in processed collection.</p>
                     )}
@@ -161,50 +155,94 @@ function DetailPanel() {
   );
 }
 
-function CompareGrid({ font }: { font: CachedFont; filePath: string }) {
+function CompareGrid({
+  font,
+  matchedRecord,
+}: {
+  font: CachedFont;
+  matchedRecord: IndexRecord | null;
+}) {
   const family = font.metadata?.preferredFamily ?? font.metadata?.familyName ?? font.name;
-  const version = font.metadata?.version ?? font.misc?.version ?? "—";
+  const version = font.metadata?.version ?? "—";
   const glyphCount = font.glyphCount ?? font.misc?.glyphCount ?? 0;
   const featureCount = (font.features ?? []).length;
+  const tables = font.misc?.availableTables ?? [];
+  const versionDiff = matchedRecord && version !== matchedRecord.version;
+  const glyphDiff = matchedRecord && glyphCount !== matchedRecord.glyphCount;
+  const sizeStr = font.fileData ? `${(font.fileData.byteLength / 1024).toFixed(0)} KB` : "—";
+  const formatStr =
+    font.format === "otf" ? "OTF (CFF)" : font.format === "ttf" ? "TTF" : font.format.toUpperCase();
 
   return (
-    <div className={styles.cmpGrid}>
-      <span className={styles.cgKey}>Version</span>
-      <span className={styles.cgVal}>{version}</span>
-      <span className={styles.cgKey}>Family</span>
-      <span className={styles.cgVal}>{family}</span>
-      <span className={styles.cgKey}>Glyphs</span>
-      <span className={styles.cgVal}>{glyphCount}</span>
-      <span className={styles.cgKey}>Features</span>
-      <span className={styles.cgVal}>{featureCount}</span>
-    </div>
+    <>
+      <div className={styles.cmpGrid}>
+        <span className={styles.cgKey}>Version</span>
+        <span className={versionDiff ? `${styles.cgVal} ${styles.cgValWarn}` : styles.cgVal}>
+          {version}
+        </span>
+        <span className={styles.cgKey}>Family</span>
+        <span className={styles.cgVal}>{family}</span>
+        <span className={styles.cgKey}>Glyphs</span>
+        <span className={glyphDiff ? `${styles.cgVal} ${styles.cgValHighlight}` : styles.cgVal}>
+          {glyphCount}
+        </span>
+        <span className={styles.cgKey}>Features</span>
+        <span className={styles.cgVal}>{featureCount}</span>
+        <span className={styles.cgKey}>File size</span>
+        <span className={styles.cgVal}>{sizeStr}</span>
+        <span className={styles.cgKey}>Format</span>
+        <span className={styles.cgVal}>{formatStr}</span>
+      </div>
+      <div className={styles.cmpTablesSection}>
+        <div className={styles.cmpTablesLabel}>Tables</div>
+        <div className={styles.cmpTables}>
+          {tables.map((tag) => {
+            const inMatched = matchedRecord?.availableTables?.includes(tag);
+            return (
+              <span key={tag} className={inMatched ? styles.tblChipShared : styles.tblChipOnly}>
+                {tag}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+    </>
   );
 }
 
-function MatchedSummary({
-  record,
-  unprocessedGlyphs,
-}: {
-  record: IndexRecord;
-  unprocessedGlyphs: number;
-  unprocessedFeatures: number;
-}) {
+function MatchedSummary({ record }: { record: IndexRecord }) {
   const glyphCount = record.glyphCount ?? 0;
-  const glyphHighlight = glyphCount !== unprocessedGlyphs;
+  const tables = record.availableTables ?? [];
 
   return (
-    <div className={styles.cmpGrid}>
-      <span className={styles.cgKey}>Version</span>
-      <span className={styles.cgVal}>{record.version ?? "—"}</span>
-      <span className={styles.cgKey}>Family</span>
-      <span className={styles.cgVal}>{record.familyName ?? "—"}</span>
-      <span className={styles.cgKey}>Glyphs</span>
-      <span className={`${styles.cgVal} ${glyphHighlight ? styles.cgValHighlight : ""}`}>
-        {glyphCount}
-      </span>
-      <span className={styles.cgKey}>Features</span>
-      <span className={styles.cgVal}>—</span>
-    </div>
+    <>
+      <div className={styles.cmpGrid}>
+        <span className={styles.cgKey}>Version</span>
+        <span className={styles.cgVal}>{record.version ?? "—"}</span>
+        <span className={styles.cgKey}>Family</span>
+        <span className={styles.cgVal}>{record.familyName ?? "—"}</span>
+        <span className={styles.cgKey}>Glyphs</span>
+        <span className={styles.cgVal}>{glyphCount}</span>
+        <span className={styles.cgKey}>Features</span>
+        <span className={styles.cgVal}>—</span>
+        <span className={styles.cgKey}>File size</span>
+        <span className={styles.cgVal}>—</span>
+        <span className={styles.cgKey}>Format</span>
+        <span className={styles.cgVal}>
+          {record.format === "otf" ? "OTF (CFF)" : record.format.toUpperCase()}
+        </span>
+      </div>
+      <div className={styles.cmpTablesSection}>
+        <div className={styles.cmpTablesLabel}>Tables</div>
+        <div className={styles.cmpTables}>
+          {tables.map((tag) => (
+            <span key={tag} className={styles.tblChipShared}>
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+    </>
   );
 }
 

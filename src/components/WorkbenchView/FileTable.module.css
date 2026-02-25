@@ -12,6 +12,36 @@
   padding: 0 var(--space-md) var(--space-md);
 }
 
+/* Prototype: sticky "UNPROCESSED N files" section bar */
+.sectionHeader {
+  padding: 6px 14px 4px;
+  background: var(--wb-bg);
+  border-bottom: 1px solid var(--wb-border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 4;
+}
+
+.sectionLabel {
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--wb-txt3);
+}
+
+.sectionCount {
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 9px;
+  color: var(--wb-txt3);
+  background: var(--wb-bg3);
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -28,13 +58,47 @@
 .table th {
   font-weight: 600;
   color: var(--color-text-muted);
-  background: var(--color-bg-elevated);
+  background: var(--wb-bg);
   position: sticky;
-  top: 0;
-  z-index: 1;
+  top: 28px;
+  z-index: 2;
   height: 28px;
   padding: 0 10px;
   vertical-align: middle;
+}
+
+.colName {
+  min-width: 200px;
+}
+
+.colVer {
+  width: 110px;
+}
+
+.colDate {
+  width: 110px;
+}
+
+.colGlyphs {
+  width: 72px;
+  text-align: right;
+  padding-right: 18px;
+}
+
+.colFeat {
+  width: 60px;
+  text-align: right;
+  padding-right: 18px;
+}
+
+.colSize {
+  width: 72px;
+  text-align: right;
+  padding-right: 18px;
+}
+
+.colType {
+  width: 52px;
 }
 
 .colHeader {
@@ -143,6 +207,80 @@
   font-size: 12px;
   color: var(--wb-txt3);
   flex-shrink: 0;
+}
+
+/* Data cells — prototype .cell-ver, .cv, .cv.pos */
+.cellVer,
+.cellDate {
+  width: 110px;
+}
+
+.cellGlyphs,
+.cellFeat,
+.cellSize {
+  text-align: right;
+  padding-right: 18px;
+}
+
+.cellGlyphs {
+  width: 72px;
+}
+
+.cellFeat {
+  width: 60px;
+}
+
+.cellSize {
+  width: 72px;
+}
+
+.cellType {
+  width: 52px;
+}
+
+.cv {
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 11px;
+  color: var(--wb-txt2);
+  white-space: nowrap;
+}
+
+.cvPos {
+  color: var(--wb-green);
+}
+
+/* Type badges — prototype .type-badge .t-otf etc */
+.typeBadge {
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+}
+
+.typeOtf {
+  background: #112030;
+  color: #5aabff;
+  border: 1px solid #1a3a60;
+}
+
+.typeTtf {
+  background: #0e2018;
+  color: #3dd68c;
+  border: 1px solid #1a4030;
+}
+
+.typeWoff {
+  background: #1e1030;
+  color: #b088ff;
+  border: 1px solid #3a1a70;
+}
+
+.typeWoff2 {
+  background: #1e1030;
+  color: #b088ff;
+  border: 1px solid #3a1a70;
 }
 
 .fileBtn {
