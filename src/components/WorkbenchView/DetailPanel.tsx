@@ -4,10 +4,29 @@
  */
 
 import { useEffect, useState } from "react";
+import { loadFontFile } from "../../engine/FontLoader";
 import type { IndexRecord } from "../../lib/indexBuilder";
 import { useWorkbenchStore } from "../../stores/workbenchStore";
 import type { CachedFont } from "../../types/font.types";
 import styles from "./DetailPanel.module.css";
+
+/** Resolve a relative path from a directory handle; supports subdirs (e.g. "sub/font.otf"). */
+async function getFileByPath(
+  root: FileSystemDirectoryHandle,
+  relativePath: string
+): Promise<File> {
+  const parts = relativePath.split("/");
+  if (parts.length === 1) {
+    const f = await root.getFileHandle(parts[0]);
+    return f.getFile();
+  }
+  let dir = root;
+  for (let i = 0; i < parts.length - 1; i++) {
+    dir = await dir.getDirectoryHandle(parts[i]);
+  }
+  const f = await dir.getFileHandle(parts[parts.length - 1]);
+  return f.getFile();
+}
 
 type DetailTab = "compare" | "features" | "glyphs";
 
@@ -55,9 +74,12 @@ function useInjectedFont(font: CachedFont | null): string | null {
 }
 
 function DetailPanel() {
-  const { unprocessedItems, selectedFontFilePath, matchResults } = useWorkbenchStore();
+  const { unprocessedItems, selectedFontFilePath, matchResults, processedDirHandle } =
+    useWorkbenchStore();
   const [collapsed, setCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState<DetailTab>("compare");
+  const [processedFont, setProcessedFont] = useState<CachedFont | null>(null);
+  const [processedFontError, setProcessedFontError] = useState<string | null>(null);
 
   const selected = selectedFontFilePath
     ? unprocessedItems.find((i) => i.filePath === selectedFontFilePath)
@@ -70,6 +92,36 @@ function DetailPanel() {
     : null;
 
   const injectedFontFamily = useInjectedFont(selected?.font ?? null);
+  const injectedProcessedFontFamily = useInjectedFont(processedFont);
+
+  // Lazy-load matched processed file when Glyphs tab is open so right side can show glyph grid.
+  useEffect(() => {
+    if (activeTab !== "glyphs" || !processedDirHandle || !matchedRecord) {
+      setProcessedFont(null);
+      setProcessedFontError(null);
+      return;
+    }
+    let cancelled = false;
+    getFileByPath(processedDirHandle, matchedRecord.filePath)
+      .then((file) => loadFontFile(file))
+      .then((font) => {
+        if (!cancelled) {
+          setProcessedFont(font);
+          setProcessedFontError(null);
+        }
+      })
+      .catch((e) => {
+        if (!cancelled) {
+          setProcessedFontError(e instanceof Error ? e.message : String(e));
+          setProcessedFont(null);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [activeTab, processedDirHandle, matchedRecord]);
+
+  const isLoadingProcessed = activeTab === "glyphs" && matchedRecord && !processedFont && !processedFontError;
 
   return (
     <section
@@ -180,11 +232,41 @@ function DetailPanel() {
                   </div>
                   <div className={styles.glyphSide}>
                     <div className={styles.glyphLabel}>
-                      Processed — {matchedRecord ? `${matchedRecord.glyphCount} glyphs` : "—"}
+                      Processed —{" "}
+                      {processedFont
+                        ? `${processedFont.glyphCount ?? processedFont.misc?.glyphCount ?? 0} glyphs`
+                        : matchedRecord
+                          ? `${matchedRecord.glyphCount} glyphs`
+                          : "—"}
                     </div>
-                    <p className={styles.muted}>
-                      Open in viewer to inspect glyphs. Glyph count from matched record.
-                    </p>
+                    {processedFontError && (
+                      <p className={styles.muted} role="alert">
+                        {processedFontError}
+                      </p>
+                    )}
+                    {isLoadingProcessed && (
+                      <p className={styles.muted}>Loading processed font…</p>
+                    )}
+                    {processedFont && !processedFontError && (
+                      <div className={styles.glyphGrid}>
+                        {PREVIEW_CHARS.map((char) => (
+                          <div
+                            key={char}
+                            className={styles.glyphCell}
+                            style={
+                              injectedProcessedFontFamily
+                                ? { fontFamily: `"${injectedProcessedFontFamily}"` }
+                                : undefined
+                            }
+                          >
+                            {char}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {!processedFont && !isLoadingProcessed && !processedFontError && matchedRecord && (
+                      <p className={styles.muted}>Open in viewer to inspect glyphs.</p>
+                    )}
                   </div>
                 </div>
               )}

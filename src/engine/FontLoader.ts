@@ -39,6 +39,10 @@ let syncError: string | null = null;
  * @param onFullLoad - Optional callback when Phase 2 completes (full CachedFont)
  * @returns Promise resolving to CachedFont (display-ready; may have _quickLoad: true)
  */
+/**
+ * Load a single font file with full extraction so CachedFont has features and metadata.
+ * Workbench needs features/featureDetails and metadata (e.g. preferredFamily) for grouping.
+ */
 export async function loadFontFile(
   file: File,
   fileHandle?: FileSystemFileHandle,
@@ -46,41 +50,22 @@ export async function loadFontFile(
 ): Promise<CachedFont> {
   const quickFont = await quickLoadFont(file);
 
-  const displayFont: CachedFont = {
-    id: quickFont.id,
-    name: quickFont.name,
-    fileName: file.name,
-    fileData: quickFont.fileData, // Decompressed
-    originalFileData: quickFont.originalFileData, // Compressed (if WOFF/WOFF2)
-    format: quickFont.format,
-    isVariable: false,
-    glyphCount: quickFont.numGlyphs,
-    timestamp: Date.now(),
-    lastAccessed: Date.now(),
-    _quickLoad: true,
-  };
+  const enhancement = await fullExtractFont(quickFont);
+  const fullFont = await storeFullFontFromMetadata(
+    quickFont.id,
+    quickFont.originalFileData ?? quickFont.fileData,
+    quickFont.format,
+    file.name,
+    enhancement.metadata
+  );
 
   if (fileHandle) {
     setWatchedFile(fileHandle, file.name);
   }
+  if (onFullLoad) onFullLoad(fullFont);
+  window.dispatchEvent(new CustomEvent("font-enhanced", { detail: { fontId: fullFont.id } }));
 
-  fullExtractFont(quickFont)
-    .then(async (enhancement) => {
-      const fullFont = await storeFullFontFromMetadata(
-        quickFont.id,
-        quickFont.originalFileData ?? quickFont.fileData,
-        quickFont.format,
-        file.name,
-        enhancement.metadata
-      );
-      if (onFullLoad) onFullLoad(fullFont);
-      window.dispatchEvent(new CustomEvent("font-enhanced", { detail: { fontId: fullFont.id } }));
-    })
-    .catch((error) => {
-      console.error("[FontLoader] Phase 2 extraction failed:", error);
-    });
-
-  return displayFont;
+  return fullFont;
 }
 
 /**
