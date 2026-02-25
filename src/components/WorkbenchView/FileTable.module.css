@@ -1,0 +1,256 @@
+.wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tableScroll {
+  flex: 1;
+  overflow: auto;
+  padding: 0 var(--space-md) var(--space-md);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table th,
+.table td {
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table th {
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: var(--color-bg-elevated);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  height: 28px;
+  padding: 0 10px;
+  vertical-align: middle;
+}
+
+.colHeader {
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--wb-txt3, var(--color-text-muted));
+}
+
+.colCheck {
+  width: 2.5rem;
+  text-align: center;
+}
+
+.cellCheck {
+  width: 2.5rem;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.cellCheck input {
+  cursor: pointer;
+  accent-color: var(--wb-amber, var(--color-accent));
+}
+
+/* Selection = blue tint (prototype .font-row.selected); duplicate = amber (prototype .font-row.duplicate) */
+.rowSelected td {
+  background: var(--wb-selection-bg);
+}
+
+.rowDuplicate td {
+  background: var(--wb-dup-bg);
+  border-bottom-color: var(--wb-dup-border);
+}
+
+/* When both selected and duplicate: keep amber (conflict) but show selection with blue left edge */
+.rowSelected.rowDuplicate td {
+  background: var(--wb-dup-bg);
+  border-bottom-color: var(--wb-dup-border);
+}
+
+.rowSelected.rowDuplicate td:first-child {
+  border-left: 3px solid var(--wb-selection-bg);
+}
+
+.rowQueuedRemove td {
+  opacity: 0.45;
+}
+
+.rowQueuedRemove .fnameStem {
+  text-decoration: line-through;
+}
+
+/* Filename cell — always editable (prototype .fname-input + .fname-ext) */
+.cellName {
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-right: 10px;
+}
+
+.fnameStem {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  outline: none;
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 12px;
+  color: var(--wb-mono, var(--color-text));
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition:
+    background 0.1s,
+    color 0.1s,
+    border-color 0.1s;
+  cursor: text;
+}
+
+.fnameStem:hover {
+  background: var(--wb-bg4);
+  border-color: var(--wb-border2);
+}
+
+.fnameStem::placeholder {
+  color: var(--wb-txt3);
+}
+
+.fnameStem:focus {
+  background: var(--wb-bg4);
+  border-color: var(--wb-border2);
+  outline: none;
+  color: var(--wb-txt);
+}
+
+.fnameStem.modified {
+  color: var(--wb-amber);
+  font-weight: 600;
+}
+
+.fnameExt {
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 12px;
+  color: var(--wb-txt3);
+  flex-shrink: 0;
+}
+
+.fileBtn {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.fileBtn:hover {
+  text-decoration: underline;
+}
+
+.renameInput {
+  width: 100%;
+  min-width: 8rem;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-family: var(--font-mono);
+}
+
+.renameInput:focus {
+  outline: 2px solid var(--color-accent-muted);
+  outline-offset: 0;
+}
+
+.muted {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.cellActions {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.queueBtn,
+.queueBtnDanger {
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
+  color: var(--color-text);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.queueBtn:hover:not(:disabled),
+.queueBtnDanger:hover:not(:disabled) {
+  border-color: var(--color-accent-muted);
+}
+
+.queueBtn:disabled,
+.queueBtnDanger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.queueBtnDanger {
+  border-color: oklch(65% 0.18 25);
+  color: oklch(55% 0.18 25);
+}
+
+.queueBtnDanger:hover:not(:disabled) {
+  border-color: oklch(55% 0.2 25);
+}
+
+.actionDefault,
+.action_SKIP,
+.action_UPGRADE,
+.action_REVIEW,
+.action_NEW,
+.action_CONFLICT,
+.action_PROBLEM {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.action_SKIP {
+  color: var(--color-text-muted);
+}
+.action_UPGRADE {
+  color: oklch(50% 0.15 145);
+}
+.action_REVIEW {
+  color: oklch(60% 0.15 85);
+}
+.action_NEW {
+  color: var(--color-accent);
+}
+.action_CONFLICT,
+.action_PROBLEM {
+  color: oklch(55% 0.2 25);
+}
+
+.empty {
+  flex: 1;
+  padding: var(--space-xl);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  overflow: auto;
+}

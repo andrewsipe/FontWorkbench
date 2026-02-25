@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Font Workbench v2</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600&family=Geist:wght@300;400;500&display=swap');
+
+:root {
+  --bg:         #0f1012;
+  --bg2:        #141517;
+  --bg3:        #191b1e;
+  --bg4:        #1e2023;
+  --border:     #252729;
+  --border2:    #2e3033;
+  --txt:        #dde1e7;
+  --txt2:       #7f8590;
+  --txt3:       #454a52;
+  --mono:       #c5cad3;
+
+  --green:      #2dd4a0;
+  --green-bg:   #0d2e22;
+  --amber:      #f5a623;
+  --amber-bg:   #2a1e06;
+  --blue:       #4d9cff;
+  --blue-bg:    #0e2040;
+  --red:        #ff5e5e;
+  --red-bg:     #2a0e0e;
+  --violet:     #a78bfa;
+  --violet-bg:  #1e1030;
+  --dim-bg:     #191b1e;
+
+  --dup-bg:     #1c1a12;
+  --dup-border: #3d3210;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Geist', sans-serif;
+  background: var(--bg);
+  color: var(--txt);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-size: 13px;
+}
+
+/* ── TITLEBAR ── */
+.titlebar {
+  height: 44px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  gap: 20px;
+  flex-shrink: 0;
+}
+.logo {
+  font-family: 'Geist Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--txt);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.logo-icon {
+  width: 22px; height: 22px;
+  background: var(--green);
+  border-radius: 5px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  color: var(--bg);
+  font-weight: 700;
+}
+.tb-divider { width: 1px; height: 20px; background: var(--border2); }
+.tb-stat {
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px;
+  color: var(--txt3);
+}
+.tb-stat strong { color: var(--txt2); font-weight: 400; }
+.tb-right { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+
+/* Apply all button — primary CTA */
+.btn-apply {
+  background: var(--amber);
+  border: none;
+  border-radius: 5px;
+  padding: 6px 16px;
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #0f0e0a;
+  cursor: pointer;
+  transition: background 0.12s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-apply:hover { background: #fbb740; }
+.btn-apply .badge {
+  background: rgba(0,0,0,0.2);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 10px;
+}
+.btn-apply.idle { background: var(--bg4); color: var(--txt3); border: 1px solid var(--border2); }
+.btn-apply.idle:hover { background: var(--bg3); color: var(--txt2); }
+
+.btn-ghost {
+  background: var(--bg4);
+  border: 1px solid var(--border2);
+  border-radius: 5px;
+  padding: 5px 12px;
+  font-family: 'Geist', sans-serif;
+  font-size: 11px;
+  color: var(--txt2);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.btn-ghost:hover { background: var(--bg3); color: var(--txt); }
+
+/* ── TWO-PANE LAYOUT ── */
+.workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panes {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ── LEFT: FAMILY SIDEBAR ── */
+.sidebar {
+  width: 220px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.sidebar-header {
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sidebar-title {
+  font-family: 'Geist Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--txt3);
+  margin-bottom: 8px;
+}
+.sidebar-search {
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 5px 9px;
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px;
+  color: var(--txt);
+  width: 100%;
+  outline: none;
+}
+.sidebar-search:focus { border-color: var(--blue); }
+.sidebar-search::placeholder { color: var(--txt3); }
+
+.family-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+.family-list::-webkit-scrollbar { width: 5px; }
+.family-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+.family-item {
+  padding: 7px 14px;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all 0.1s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.family-item:hover { background: var(--bg3); }
+.family-item.active {
+  background: var(--bg4);
+  border-left-color: var(--green);
+}
+.fi-name {
+  font-family: 'Geist', sans-serif;
+  font-size: 12px;
+  color: var(--txt);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fi-count {
+  font-family: 'Geist Mono', monospace;
+  font-size: 10px;
+  color: var(--txt3);
+  flex-shrink: 0;
+}
+.fi-flag {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.fi-flag.needs-review { background: var(--amber); }
+.fi-flag.new         { background: var(--blue); }
+.fi-flag.clean       { background: var(--txt3); }
+.fi-flag.conflict    { background: var(--violet); }
+
+/* ── RIGHT: FILE TABLE ── */
+.file-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* Table toolbar */
+.table-toolbar {
+  height: 38px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.tt-family-name {
+  font-family: 'Geist', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--txt);
+}
+.tt-meta {
+  font-family: 'Geist Mono', monospace;
+  font-size: 10px;
+  color: var(--txt3);
+  display: flex;
+  gap: 12px;
+}
+.tt-meta span strong { color: var(--txt2); font-weight: 400; }
+.tt-right { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+
+.sel-btn {
+  font-family: 'Geist Mono', monospace;
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: 3px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--txt2);
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.sel-btn:hover { background: var(--bg4); color: var(--txt); }
+.sel-btn.danger { border-color: #3d1010; color: var(--red); }
+.sel-btn.danger:hover { background: var(--red-bg); }
+
+/* Column header */
+.col-header {
+  height: 28px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  flex-shrink: 0;
+  user-select: none;
+}
+.ch {
+  font-family: 'Geist Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--txt3);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding-right: 10px;
+}
+.ch:hover { color: var(--txt2); }
+.ch.sorted { color: var(--blue); }
+.ch-check  { width: 28px; }
+.ch-name   { flex: 1; min-width: 200px; }
+.ch-ver    { width: 110px; }
+.ch-date   { width: 110px; }
+.ch-glyphs { width: 72px; text-align: right; padding-right: 18px; }
+.ch-feat   { width: 60px; text-align: right; padding-right: 18px; }
+.ch-size   { width: 72px; text-align: right; padding-right: 18px; }
+.ch-type   { width: 52px; }
+
+/* Table scroll */
+.table-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+}
+.table-scroll::-webkit-scrollbar { width: 7px; }
+.table-scroll::-webkit-scrollbar-track { background: var(--bg); }
+.table-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+/* Font row */
+.font-row {
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 14px;
+  border-bottom: 1px solid #16181a;
+  cursor: pointer;
+  transition: background 0.08s;
+}
+.font-row:hover { background: var(--bg3); }
+.font-row.selected { background: #182030; }
+.font-row.duplicate {
+  background: var(--dup-bg);
+  border-bottom-color: var(--dup-border);
+}
+.font-row.duplicate:hover { background: #221e0e; }
+.font-row.queued-remove { opacity: 0.45; text-decoration: line-through; }
+
+/* Checkbox */
+.row-check {
+  width: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.row-check input {
+  width: 13px; height: 13px;
+  accent-color: var(--amber);
+  cursor: pointer;
+}
+
+/* Filename cell — editable */
+.cell-name {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  padding-right: 10px;
+}
+.fname-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Geist Mono', monospace;
+  font-size: 12px;
+  color: var(--mono);
+  width: 100%;
+  cursor: text;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: background 0.1s, color 0.1s;
+  min-width: 0;
+}
+.fname-input:hover { background: var(--bg4); }
+.fname-input:focus { background: var(--bg4); outline: 1px solid var(--border2); color: var(--txt); }
+.fname-input.modified {
+  color: var(--amber);
+  font-weight: 600;
+}
+.fname-ext {
+  font-family: 'Geist Mono', monospace;
+  font-size: 12px;
+  color: var(--txt3);
+  flex-shrink: 0;
+}
+.dup-badge {
+  font-family: 'Geist Mono', monospace;
+  font-size: 9px;
+  color: var(--amber);
+  background: var(--amber-bg);
+  border: 1px solid #4a3008;
+  padding: 1px 5px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* Data cells */
+.cell {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.cell-ver   { width: 110px; }
+.cell-date  { width: 110px; }
+.cell-glyphs{ width: 72px;  justify-content: flex-end; padding-right: 18px; }
+.cell-feat  { width: 60px;  justify-content: flex-end; padding-right: 18px; }
+.cell-size  { width: 72px;  justify-content: flex-end; padding-right: 18px; }
+.cell-type  { width: 52px; }
+
+.cv {
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px;
+  color: var(--txt2);
+  white-space: nowrap;
+}
+.cv.dim  { color: var(--txt3); }
+.cv.pos  { color: var(--green); }
+.cv.warn { color: var(--amber); }
+
+.type-badge {
+  font-family: 'Geist Mono', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+}
+.t-otf  { background: #112030; color: #5aabff; border: 1px solid #1a3a60; }
+.t-ttf  { background: #0e2018; color: #3dd68c; border: 1px solid #1a4030; }
+.t-woff2{ background: #1e1030; color: #b088ff; border: 1px solid #3a1a70; }
+
+/* ── BOTTOM DETAIL PANEL ── */
+.detail-panel {
+  height: 280px;
+  background: var(--bg2);
+  border-top: 2px solid var(--border2);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  transition: height 0.2s ease;
+}
+.detail-panel.collapsed { height: 36px; }
+
+.dp-tabs {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding: 0 14px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.dp-tab {
+  font-family: 'Geist Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--txt3);
+  border: 1px solid transparent;
+  transition: all 0.1s;
+  background: transparent;
+}
+.dp-tab:hover { color: var(--txt2); background: var(--bg4); }
+.dp-tab.active { color: var(--txt); background: var(--bg4); border-color: var(--border2); }
+.dp-selected-name {
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px;
+  color: var(--txt2);
+  margin-left: 10px;
+}
+.dp-toggle {
+  margin-left: auto;
+  font-family: 'Geist Mono', monospace;
+  font-size: 10px;
+  color: var(--txt3);
+  cursor: pointer;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: transparent;
+  border: none;
+  transition: all 0.1s;
+}
+.dp-toggle:hover { color: var(--txt2); background: var(--bg4); }
+
+.dp-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+}
+.detail-panel.collapsed .dp-content { display: none; }
+
+/* Comparison tab */
+.tab-compare {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+.compare-left, .compare-right {
+  flex: 1;
+  padding: 12px 16px;
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+}
+.compare-right { border-right: none; }
+.compare-left::-webkit-scrollbar,
+.compare-right::-webkit-scrollbar { width: 5px; }
+.compare-left::-webkit-scrollbar-thumb,
+.compare-right::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+.cmp-label {
+  font-family: 'Geist Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--txt3);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cmp-label .badge-label {
+  background: var(--bg4);
+  border: 1px solid var(--border2);
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 9px;
+  color: var(--txt2);
+}
+.cmp-filename {
+  font-family: 'Geist Mono', monospace;
+  font-size: 12px;
+  color: var(--txt);
+  margin-bottom: 10px;
+  word-break: break-all;
+}
+
+.cmp-grid {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 5px 10px;
+  margin-bottom: 12px;
+}
+.cg-key {
+  font-family: 'Geist Mono', monospace;
+  font-size: 10px;
+  color: var(--txt3);
+  padding-top: 1px;
+}
+.cg-val {
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px;
+  color: var(--txt2);
+}
+.cg-val.highlight { color: var(--green); }
+.cg-val.warn { color: var(--amber); }
+
+.cmp-tables {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+.tbl-chip {
+  font-family: 'Geist Mono', monospace;
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid var(--border2);
+  color: var(--txt2);
+  background: var(--bg3);
+}
+.tbl-chip.shared { border-color: #1a4030; color: #3dd68c; background: #0e2018; }
+.tbl-chip.only-here { border-color: #1a3a60; color: #5aabff; background: #112030; }
+
+/* Features tab */
+.tab-features {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+.feat-side {
+  flex: 1;
+  padding: 12px 16px;
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+}
+.feat-side:last-child { border-right: none; }
+.feat-side::-webkit-scrollbar { width: 5px; }
+.feat-side::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+.feat-label {
+  font-family: 'Geist Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--txt3);
+  margin-bottom: 8px;
+}
+.feat-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.feat-tag {
+  font-family: 'Geist Mono', monospace;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--txt2);
+}
+.feat-tag.shared { background: #0e2018; border-color: #1a4030; color: #3dd68c; }
+.feat-tag.only   { background: #112030; border-color: #1a3a60; color: #5aabff; }
+
+/* Glyphs tab — simple grid */
+.tab-glyphs {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+.glyph-side {
+  flex: 1;
+  padding: 12px 16px;
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+}
+.glyph-side:last-child { border-right: none; }
+.glyph-side::-webkit-scrollbar { width: 5px; }
+.glyph-side::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+.glyph-label {
+  font-family: 'Geist Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--txt3);
+  margin-bottom: 8px;
+}
+.glyph-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--txt2);
+  font-family: serif; /* will be overridden in real version */
+}
+.glyph-cell {
+  width: 26px; height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 3px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  font-size: 14px;
+  cursor: default;
+  transition: background 0.1s;
+}
+.glyph-cell:hover { background: var(--bg4); border-color: var(--border2); }
+
+/* ── STATUS BAR ── */
+.statusbar {
+  height: 28px;
+  background: #090a0b;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  gap: 18px;
+  flex-shrink: 0;
+}
+.sb {
+  font-family: 'Geist Mono', monospace;
+  font-size: 10px;
+  color: var(--txt3);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.sb .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.sb strong { color: var(--txt2); font-weight: 400; }
+</style>
+</head>
+<body>
+
+<!-- TITLEBAR -->
+<div class="titlebar">
+  <div class="logo">
+    <div class="logo-icon">W</div>
+    FONT WORKBENCH
+  </div>
+  <div class="tb-divider"></div>
+  <div class="tb-stat">Unprocessed <strong>1,847</strong></div>
+  <div class="tb-stat">Processed <strong>198,243</strong></div>
+  <div class="tb-stat">Families <strong>312</strong></div>
+  <div class="tb-right">
+    <button class="btn-ghost">↺ Rescan</button>
+    <button class="btn-apply" id="applyBtn" onclick="applyAll()">
+      Apply All Changes <span class="badge" id="changeCount">7</span>
+    </button>
+  </div>
+</div>
+
+<!-- WORKSPACE -->
+<div class="workspace">
+  <div class="panes">
+
+    <!-- SIDEBAR: Family list -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">Families</div>
+        <input class="sidebar-search" type="text" placeholder="Search families…" oninput="filterFamilies(this.value)">
+      </div>
+      <div class="family-list" id="familyList">
+
+        <div class="family-item" onclick="selectFamily(this,'Eastman','11','review')">
+          <span class="fi-flag needs-review"></span>
+          <span class="fi-name">Eastman</span>
+          <span class="fi-count">11</span>
+        </div>
+        <div class="family-item" onclick="selectFamily(this,'Apex','6','clean')">
+          <span class="fi-flag clean"></span>
+          <span class="fi-name">Apex</span>
+          <span class="fi-count">6</span>
+        </div>
+        <div class="family-item active" onclick="selectFamily(this,'Technica','16','review')">
+          <span class="fi-flag needs-review"></span>
+          <span class="fi-name">Technica</span>
+          <span class="fi-count">16</span>
+        </div>
+        <div class="family-item" onclick="selectFamily(this,'Technik','8','new')">
+          <span class="fi-flag new"></span>
+          <span class="fi-name">Technik</span>
+          <span class="fi-count">8</span>
+        </div>
+        <div class="family-item" onclick="selectFamily(this,'TEG','22','review')">
+          <span class="fi-flag needs-review"></span>
+          <span class="fi-name">TEG</span>
+          <span class="fi-count">22</span>
+        </div>
+        <div class="family-item" onclick="selectFamily(this,'TeXGyre Pagella','8','conflict')">
+          <span class="fi-flag conflict"></span>
+          <span class="fi-name">TeXGyre Pagella</span>
+          <span class="fi-count">8</span>
+        </div>
+        <div class="family-item" onclick="selectFamily(this,'Telecom','4','new')">
+          <span class="fi-flag new"></span>
+          <span class="fi-name">Telecom</span>
+          <span class="fi-count">4</span>
+        </div>
+        <div class="family-item" onclick="selectFamily(this,'Telefon','12','clean')">
+          <span class="fi-flag clean"></span>
+          <span class="fi-name">Telefon</span>
+          <span class="fi-count">12</span>
+        </div>
+        <div class="family-item" onclick="selectFamily(this,'Teimer','8','clean')">
+          <span class="fi-flag clean"></span>
+          <span class="fi-name">Teimer</span>
+          <span class="fi-count">8</span>
+        </div>
+        <div class="family-item" onclick="selectFamily(this,'Xenon Nue','9','review')">
+          <span class="fi-flag needs-review"></span>
+          <span class="fi-name">Xenon Nue</span>
+          <span class="fi-count">9</span>
+        </div>
+        <div class="family-item" onclick="selectFamily(this,'Xer 0','1','new')">
+          <span class="fi-flag new"></span>
+          <span class="fi-name">Xer 0</span>
+          <span class="fi-count">1</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- FILE TABLE -->
+    <div class="file-area">
+
+      <div class="table-toolbar">
+        <span class="tt-family-name" id="tt-fname">Technica</span>
+        <div class="tt-meta">
+          <span>Unprocessed <strong id="tt-unproc">16</strong></span>
+          <span>Processed <strong id="tt-proc">16</strong></span>
+          <span id="tt-status" style="color:var(--amber)">⚠ Review recommended</span>
+        </div>
+        <div class="tt-right">
+          <button class="sel-btn" onclick="selectDuplicates()">Select Duplicates</button>
+          <button class="sel-btn danger" onclick="queueRemoveSelected()">Queue Removal</button>
+        </div>
+      </div>
+
+      <div class="col-header">
+        <div class="ch ch-check"></div>
+        <div class="ch ch-name sorted">Filename <span style="font-size:9px;opacity:.5">↑</span></div>
+        <div class="ch ch-ver">Version</div>
+        <div class="ch ch-date">Created</div>
+        <div class="ch ch-glyphs" style="text-align:right">Glyphs</div>
+        <div class="ch ch-feat" style="text-align:right">Feat.</div>
+        <div class="ch ch-size" style="text-align:right">Size</div>
+        <div class="ch ch-type">Type</div>
+      </div>
+
+      <div class="table-scroll" id="tableScroll">
+
+        <!-- Section label: Unprocessed -->
+        <div style="padding:6px 14px 4px; background:var(--bg); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px; position:sticky; top:0; z-index:4;">
+          <span style="font-family:'Geist Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--txt3)">Unprocessed</span>
+          <span style="font-family:'Geist Mono',monospace;font-size:9px;color:var(--txt3); background:var(--bg3); padding:1px 6px; border-radius:10px;">16 files</span>
+        </div>
+
+        <!-- UNPROCESSED ROWS -->
+        <div class="font-row" onclick="selectRow(this,'Technica-Black','otf')" data-stem="Technica-Black" data-ext="otf">
+          <div class="row-check"><input type="checkbox" onclick="event.stopPropagation()"></div>
+          <div class="cell-name">
+            <input class="fname-input" value="Technica-Black" oninput="markModified(this)" onfocus="this.select()">
+            <span class="fname-ext">.otf</span>
+          </div>
+          <div class="cell cell-ver"><span class="cv">2.000</span></div>
+          <div class="cell cell-date"><span class="cv">11/26/25</span></div>
+          <div class="cell cell-glyphs"><span class="cv">612</span></div>
+          <div class="cell cell-feat"><span class="cv">14</span></div>
+          <div class="cell cell-size"><span class="cv">50 KB</span></div>
+          <div class="cell cell-type"><span class="type-badge t-otf">OTF</span></div>
+        </div>
+
+        <div class="font-row" onclick="selectRow(this,'Technica-BlackItalic','otf')" data-stem="Technica-BlackItalic" data-ext="otf">
+          <div class="row-check"><input type="checkbox" onclick="event.stopPropagation()"></div>
+          <div class="cell-name">
+            <input class="fname-input" value="Technica-BlackItalic" oninput="markModified(this)" onfocus="this.select()">
+            <span class="fname-ext">.otf</span>
+          </div>
+          <div class="cell cell-ver"><span class="cv">2.000</span></div>
+          <div class="cell cell-date"><span class="cv">11/26/25</span></div>
+          <div class="cell cell-glyphs"><span class="cv">648</span></div>
+          <div class="cell cell-feat"><span class="cv">14</span></div>
+          <div class="cell cell-size"><span class="cv">54 KB</span></div>
+          <div class="cell cell-type"><span class="type-badge t-otf">OTF</span></div>
+        </div>
+
+        <div class="font-row" onclick="selectRow(this,'Technica-Bold','otf')" data-stem="Technica-Bold" data-ext="otf">
+          <div class="row-check"><input type="checkbox" onclick="event.stopPropagation()"></div>
+          <div class="cell-name">
+            <input class="fname-input" value="Technica-Bold" oninput="markModified(this)" onfocus="this.select()">
+            <span class="fname-ext">.otf</span>
+          </div>
+          <div class="cell cell-ver"><span class="cv">2.000</span></div>
+          <div class="cell cell-date"><span class="cv">11/26/25</span></div>
+          <div class="cell cell-glyphs"><span class="cv">612</span></div>
+          <div class="cell cell-feat"><span class="cv">14</span></div>
+          <div class="cell cell-size"><span class="cv">49 KB</span></div>
+          <div class="cell cell-type"><span class="type-badge t-otf">OTF</span></div>
+        </div>
+
+        <div class="font-row" onclick="selectRow(this,'Technica-BoldItalic','otf')" data-stem="Technica-BoldItalic" data-ext="otf">
+          <div class="row-check"><input type="checkbox" onclick="event.stopPropagation()"></div>
+          <div class="cell-name">
+            <input class="fname-input" value="Technica-BoldItalic" oninput="markModified(this)" onfocus="this.select()">
+            <span class="fname-ext">.otf</span>
+          </div>
+          <div class="cell cell-ver"><span class="cv warn">2.001</span></div>
+          <div class="cell cell-date"><span class="cv">11/26/25</span></div>
+          <div class="cell cell-glyphs"><span class="cv pos">744</span></div>
+          <div class="cell cell-feat"><span class="cv pos">18</span></div>
+          <div class="cell cell-size"><span class="cv">54 KB</span></div>
+          <div class="cell cell-type"><span class="type-badge t-otf">OTF</span></div>
+        </div>
+
+        <div class="font-row duplicate" onclick="selectRow(this,'Technica-BoldItalic~001','otf')" data-stem="Technica-BoldItalic~001" data-ext="otf">
+          <div class="row-check"><input type="checkbox" onclick="event.stopPropagation()" class="dup-check"></div>
+          <div class="cell-name">
+            <input class="fname-input" value="Technica-BoldItalic~001" oninput="markModified(this)" onfocus="this.select()">
+            <span class="fname-ext">.otf</span>
+            <span class="dup-badge">~001</span>
+          </div>
+          <div class="cell cell-ver"><span class="cv">2.001</span></div>
+          <div class="cell cell-date"><span class="cv">11/26/25</span></div>
+          <div class="cell cell-glyphs"><span class="cv">744</span></div>
+          <div class="cell cell-feat"><span class="cv">18</span></div>
+          <div class="cell cell-size"><span class="cv">54 KB</span></div>
+          <div class="cell cell-type"><span class="type-badge t-otf">OTF</span></div>
+        </div>
+
+        <div class="font-row" onclick="selectRow(this,'Technica-ExtraLight','otf')">
+          <div class="row-check"><input type="checkbox" onclick="event.stopPropagation()"></div>
+          <div class="cell-name">
+            <input class="fname-input" value="Technica-ExtraLight" oninput="markModified(this)" onfocus="this.select()">
+            <span class="fname-ext">.otf</span>
+          </div>
+          <div class="cell cell-ver"><span class="cv">2.000</span></div>
+          <div class="cell cell-date"><span class="cv">11/26/25</span></div>
+          <div class="cell cell-glyphs"><span class="cv">612</span></div>
+          <div class="cell cell-feat"><span class="cv">14</span></div>
+          <div class="cell cell-size"><span class="cv">49 KB</span></div>
+          <div class="cell cell-type"><span class="type-badge t-otf">OTF</span></div>
+        </div>
+
+        <div class="font-row" onclick="selectRow(this,'Technica-ExtraLightItalic','otf')">
+          <div class="row-check"><input type="checkbox" onclick="event.stopPropagation()"></div>
+          <div class="cell-name">
+            <input class="fname-input" value="Technica-ExtraLightItalic" oninput="markModified(this)" onfocus="this.select()">
+            <span class="fname-ext">.otf</span>
+          </div>
+          <div class="cell cell-ver"><span class="cv">2.000</span></div>
+          <div class="cell cell-date"><span class="cv">11/26/25</span></div>
+          <div class="cell cell-glyphs"><span class="cv">648</span></div>
+          <div class="cell cell-feat"><span class="cv">14</span></div>
+          <div class="cell cell-size"><span class="cv">54 KB</span></div>
+          <div class="cell cell-type"><span class="type-badge t-otf">OTF</span></div>
+        </div>
+
+        <div class="font-row" onclick="selectRow(this,'Technica-Light','otf')">
+          <div class="row-check"><input type="checkbox" onclick="event.stopPropagation()"></div>
+          <div class="cell-name">
+            <input class="fname-input" value="Technica-Light" oninput="markModified(this)" onfocus="this.select()">
+            <span class="fname-ext">.otf</span>
+          </div>
+          <div class="cell cell-ver"><span class="cv">2.000</span></div>
+          <div class="cell cell-date"><span class="cv">11/26/25</span></div>
+          <div class="cell cell-glyphs"><span class="cv">612</span></div>
+          <div class="cell cell-feat"><span class="cv">14</span></div>
+          <div class="cell cell-size"><span class="cv">50 KB</span></div>
+          <div class="cell cell-type"><span class="type-badge t-otf">OTF</span></div>
+        </div>
+
+        <!-- Section label: Processed (matched) -->
+        <div style="padding:6px 14px 4px; background:var(--bg); border-bottom:1px solid var(--border); border-top: 1px solid var(--border2); display:flex; align-items:center; gap:8px; position:sticky; top:0; z-index:4;">
+          <span style="font-family:'Geist Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--txt3)">Processed — Matched Collection</span>
+          <span style="font-family:'Geist Mono',monospace;font-size:9px;color:var(--txt3); background:var(--bg3); padding:1px 6px; border-radius:10px;">16 files</span>
+          <span style="font-family:'Geist Mono',monospace;font-size:9px;color:var(--green); margin-left:4px;">✓ Count matches</span>
+        </div>
+
+        <div class="font-row" style="opacity:.65" onclick="selectRow(this,'Technica-Black','otf','processed')">
+          <div class="row-check"><input type="checkbox" onclick="event.stopPropagation()" disabled style="opacity:.3"></div>
+          <div class="cell-name">
+            <input class="fname-input" value="Technica-Black" style="color:var(--txt3);pointer-events:none" readonly>
+            <span class="fname-ext">.otf</span>
+          </div>
+          <div class="cell cell-ver"><span class="cv dim">2.000</span></div>
+          <div class="cell cell-date"><span class="cv dim">11/26/25</span></div>
+          <div class="cell cell-glyphs"><span class="cv dim">612</span></div>
+          <div class="cell cell-feat"><span class="cv dim">14</span></div>
+          <div class="cell cell-size"><span class="cv dim">50 KB</span></div>
+          <div class="cell cell-type"><span class="type-badge t-otf" style="opacity:.5">OTF</span></div>
+        </div>
+
+        <div class="font-row" style="opacity:.65" onclick="selectRow(this,'Technica-BoldItalic','otf','processed')">
+          <div class="row-check"><input type="checkbox" onclick="event.stopPropagation()" disabled style="opacity:.3"></div>
+          <div class="cell-name">
+            <input class="fname-input" value="Technica-BoldItalic" style="color:var(--txt3);pointer-events:none" readonly>
+            <span class="fname-ext">.otf</span>
+          </div>
+          <div class="cell cell-ver"><span class="cv dim">2.000</span></div>
+          <div class="cell cell-date"><span class="cv dim">9/14/25</span></div>
+          <div class="cell cell-glyphs"><span class="cv dim">612</span></div>
+          <div class="cell cell-feat"><span class="cv dim">14</span></div>
+          <div class="cell cell-size"><span class="cv dim">49 KB</span></div>
+          <div class="cell cell-type"><span class="type-badge t-otf" style="opacity:.5">OTF</span></div>
+        </div>
+
+      </div><!-- /table-scroll -->
+
+    </div><!-- /file-area -->
+
+  </div><!-- /panes -->
+
+  <!-- BOTTOM DETAIL PANEL -->
+  <div class="detail-panel" id="detailPanel">
+    <div class="dp-tabs">
+      <button class="dp-tab active" onclick="switchTab(this,'compare')">Compare</button>
+      <button class="dp-tab" onclick="switchTab(this,'features')">Features</button>
+      <button class="dp-tab" onclick="switchTab(this,'glyphs')">Glyphs</button>
+      <span class="dp-selected-name" id="dp-fname">Technica-BoldItalic.otf</span>
+      <button class="dp-toggle" onclick="togglePanel()" id="panelToggle">▾ Collapse</button>
+    </div>
+
+    <div class="dp-content" id="dpContent">
+
+      <!-- COMPARE TAB -->
+      <div class="tab-compare" id="tab-compare">
+        <div class="compare-left">
+          <div class="cmp-label">Unprocessed <span class="badge-label">Selected</span></div>
+          <div class="cmp-filename">Technica-BoldItalic.otf</div>
+          <div class="cmp-grid">
+            <span class="cg-key">Version</span><span class="cg-val warn">2.001</span>
+            <span class="cg-key">Created</span><span class="cg-val">11/26/2025</span>
+            <span class="cg-key">Glyphs</span><span class="cg-val highlight">744</span>
+            <span class="cg-key">Features</span><span class="cg-val highlight">18</span>
+            <span class="cg-key">File size</span><span class="cg-val">54 KB</span>
+            <span class="cg-key">Format</span><span class="cg-val">OTF (CFF)</span>
+          </div>
+          <div style="margin-top:4px; font-family:'Geist Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.09em; color:var(--txt3); margin-bottom:6px;">Tables</div>
+          <div class="cmp-tables">
+            <span class="tbl-chip shared">head</span>
+            <span class="tbl-chip shared">name</span>
+            <span class="tbl-chip shared">OS/2</span>
+            <span class="tbl-chip shared">GSUB</span>
+            <span class="tbl-chip shared">GPOS</span>
+            <span class="tbl-chip only-here">KERN</span>
+            <span class="tbl-chip shared">CFF</span>
+            <span class="tbl-chip shared">post</span>
+          </div>
+        </div>
+        <div class="compare-right">
+          <div class="cmp-label">Processed <span class="badge-label">Matched</span></div>
+          <div class="cmp-filename">Technica-BoldItalic.otf</div>
+          <div class="cmp-grid">
+            <span class="cg-key">Version</span><span class="cg-val">2.000</span>
+            <span class="cg-key">Created</span><span class="cg-val">9/14/2025</span>
+            <span class="cg-key">Glyphs</span><span class="cg-val">612</span>
+            <span class="cg-key">Features</span><span class="cg-val">14</span>
+            <span class="cg-key">File size</span><span class="cg-val">49 KB</span>
+            <span class="cg-key">Format</span><span class="cg-val">OTF (CFF)</span>
+          </div>
+          <div style="margin-top:4px; font-family:'Geist Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.09em; color:var(--txt3); margin-bottom:6px;">Tables</div>
+          <div class="cmp-tables">
+            <span class="tbl-chip shared">head</span>
+            <span class="tbl-chip shared">name</span>
+            <span class="tbl-chip shared">OS/2</span>
+            <span class="tbl-chip shared">GSUB</span>
+            <span class="tbl-chip shared">GPOS</span>
+            <span class="tbl-chip shared">CFF</span>
+            <span class="tbl-chip shared">post</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEATURES TAB -->
+      <div class="tab-features" id="tab-features" style="display:none">
+        <div class="feat-side">
+          <div class="feat-label">Unprocessed — Technica-BoldItalic.otf (18 features)</div>
+          <div class="feat-grid">
+            <span class="feat-tag shared">aalt</span><span class="feat-tag shared">c2sc</span>
+            <span class="feat-tag shared">case</span><span class="feat-tag shared">dnom</span>
+            <span class="feat-tag shared">frac</span><span class="feat-tag shared">liga</span>
+            <span class="feat-tag shared">lnum</span><span class="feat-tag shared">numr</span>
+            <span class="feat-tag shared">onum</span><span class="feat-tag shared">ordn</span>
+            <span class="feat-tag shared">pnum</span><span class="feat-tag shared">smcp</span>
+            <span class="feat-tag shared">sups</span><span class="feat-tag shared">tnum</span>
+            <span class="feat-tag only">calt</span><span class="feat-tag only">clig</span>
+            <span class="feat-tag only">kern</span><span class="feat-tag only">locl</span>
+          </div>
+          <div style="margin-top:10px; font-family:'Geist Mono',monospace; font-size:9px; color:var(--txt3)"><span style="color:#5aabff">■</span> 4 features only in unprocessed</div>
+        </div>
+        <div class="feat-side">
+          <div class="feat-label">Processed — Technica-BoldItalic.otf (14 features)</div>
+          <div class="feat-grid">
+            <span class="feat-tag shared">aalt</span><span class="feat-tag shared">c2sc</span>
+            <span class="feat-tag shared">case</span><span class="feat-tag shared">dnom</span>
+            <span class="feat-tag shared">frac</span><span class="feat-tag shared">liga</span>
+            <span class="feat-tag shared">lnum</span><span class="feat-tag shared">numr</span>
+            <span class="feat-tag shared">onum</span><span class="feat-tag shared">ordn</span>
+            <span class="feat-tag shared">pnum</span><span class="feat-tag shared">smcp</span>
+            <span class="feat-tag shared">sups</span><span class="feat-tag shared">tnum</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- GLYPHS TAB -->
+      <div class="tab-glyphs" id="tab-glyphs" style="display:none">
+        <div class="glyph-side">
+          <div class="glyph-label">Unprocessed — 744 glyphs</div>
+          <div class="glyph-grid">
+            <div class="glyph-cell">A</div><div class="glyph-cell">B</div><div class="glyph-cell">C</div>
+            <div class="glyph-cell">D</div><div class="glyph-cell">E</div><div class="glyph-cell">F</div>
+            <div class="glyph-cell">G</div><div class="glyph-cell">H</div><div class="glyph-cell">I</div>
+            <div class="glyph-cell">J</div><div class="glyph-cell">K</div><div class="glyph-cell">L</div>
+            <div class="glyph-cell">M</div><div class="glyph-cell">N</div><div class="glyph-cell">O</div>
+            <div class="glyph-cell">P</div><div class="glyph-cell">Q</div><div class="glyph-cell">R</div>
+            <div class="glyph-cell">S</div><div class="glyph-cell">T</div><div class="glyph-cell">U</div>
+            <div class="glyph-cell">V</div><div class="glyph-cell">W</div><div class="glyph-cell">X</div>
+            <div class="glyph-cell">Y</div><div class="glyph-cell">Z</div><div class="glyph-cell">a</div>
+            <div class="glyph-cell">b</div><div class="glyph-cell">c</div><div class="glyph-cell">d</div>
+            <div class="glyph-cell">e</div><div class="glyph-cell">f</div><div class="glyph-cell">g</div>
+            <div class="glyph-cell">h</div><div class="glyph-cell">i</div><div class="glyph-cell">j</div>
+            <div class="glyph-cell">k</div><div class="glyph-cell">l</div><div class="glyph-cell">m</div>
+            <div class="glyph-cell">n</div><div class="glyph-cell">o</div><div class="glyph-cell">p</div>
+            <div class="glyph-cell">q</div><div class="glyph-cell">r</div><div class="glyph-cell">s</div>
+            <div class="glyph-cell">t</div><div class="glyph-cell">u</div><div class="glyph-cell">v</div>
+            <div class="glyph-cell">w</div><div class="glyph-cell">x</div><div class="glyph-cell">y</div>
+            <div class="glyph-cell">z</div><div class="glyph-cell">0</div><div class="glyph-cell">1</div>
+            <div class="glyph-cell">2</div><div class="glyph-cell">3</div><div class="glyph-cell">4</div>
+            <div class="glyph-cell">5</div><div class="glyph-cell">6</div><div class="glyph-cell">7</div>
+            <div class="glyph-cell">8</div><div class="glyph-cell">9</div><div class="glyph-cell">!</div>
+            <div class="glyph-cell">@</div><div class="glyph-cell">#</div><div class="glyph-cell">$</div>
+            <div class="glyph-cell">%</div><div class="glyph-cell">&</div><div class="glyph-cell">?</div>
+            <div class="glyph-cell">À</div><div class="glyph-cell">Á</div><div class="glyph-cell">Â</div>
+            <div class="glyph-cell">Ä</div><div class="glyph-cell">Ç</div><div class="glyph-cell">É</div>
+            <div class="glyph-cell">Ñ</div><div class="glyph-cell">Ö</div><div class="glyph-cell">Ü</div>
+          </div>
+        </div>
+        <div class="glyph-side">
+          <div class="glyph-label">Processed — 612 glyphs</div>
+          <div class="glyph-grid">
+            <div class="glyph-cell">A</div><div class="glyph-cell">B</div><div class="glyph-cell">C</div>
+            <div class="glyph-cell">D</div><div class="glyph-cell">E</div><div class="glyph-cell">F</div>
+            <div class="glyph-cell">G</div><div class="glyph-cell">H</div><div class="glyph-cell">I</div>
+            <div class="glyph-cell">J</div><div class="glyph-cell">K</div><div class="glyph-cell">L</div>
+            <div class="glyph-cell">M</div><div class="glyph-cell">N</div><div class="glyph-cell">O</div>
+            <div class="glyph-cell">P</div><div class="glyph-cell">Q</div><div class="glyph-cell">R</div>
+            <div class="glyph-cell">S</div><div class="glyph-cell">T</div><div class="glyph-cell">U</div>
+            <div class="glyph-cell">V</div><div class="glyph-cell">W</div><div class="glyph-cell">X</div>
+            <div class="glyph-cell">Y</div><div class="glyph-cell">Z</div><div class="glyph-cell">a</div>
+            <div class="glyph-cell">b</div><div class="glyph-cell">c</div><div class="glyph-cell">d</div>
+            <div class="glyph-cell">e</div><div class="glyph-cell">f</div><div class="glyph-cell">g</div>
+            <div class="glyph-cell">h</div><div class="glyph-cell">i</div><div class="glyph-cell">j</div>
+            <div class="glyph-cell">k</div><div class="glyph-cell">l</div><div class="glyph-cell">m</div>
+            <div class="glyph-cell">n</div><div class="glyph-cell">o</div><div class="glyph-cell">p</div>
+            <div class="glyph-cell">q</div><div class="glyph-cell">r</div><div class="glyph-cell">s</div>
+            <div class="glyph-cell">t</div><div class="glyph-cell">u</div><div class="glyph-cell">v</div>
+            <div class="glyph-cell">w</div><div class="glyph-cell">x</div><div class="glyph-cell">y</div>
+            <div class="glyph-cell">z</div><div class="glyph-cell">0</div><div class="glyph-cell">1</div>
+            <div class="glyph-cell">2</div><div class="glyph-cell">3</div><div class="glyph-cell">4</div>
+            <div class="glyph-cell">5</div><div class="glyph-cell">6</div><div class="glyph-cell">7</div>
+            <div class="glyph-cell">8</div><div class="glyph-cell">9</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /dp-content -->
+  </div><!-- /detail-panel -->
+
+</div><!-- /workspace -->
+
+<!-- STATUS BAR -->
+<div class="statusbar">
+  <div class="sb"><span class="dot" style="background:var(--green)"></span>Ready</div>
+  <div class="sb"><span class="dot" style="background:var(--blue)"></span>DB <strong>font_workbench.db</strong></div>
+  <div class="sb" id="sb-changes" style="display:none">
+    <span class="dot" style="background:var(--amber)"></span>
+    <strong id="sb-chcount">0</strong> pending changes
+  </div>
+  <div class="sb" id="sb-removals" style="display:none">
+    <span class="dot" style="background:var(--red)"></span>
+    <strong id="sb-rmcount">0</strong> queued for removal
+  </div>
+</div>
+
+<script>
+  let changeCount = 7; // mock initial state
+  let removalCount = 0;
+  let panelCollapsed = false;
+  let activeTab = 'compare';
+  let selectedRow = null;
+
+  // Tab switching
+  function switchTab(btn, tabName) {
+    document.querySelectorAll('.dp-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-compare, .tab-features, .tab-glyphs').forEach(t => t.style.display = 'none');
+    const el = document.getElementById('tab-' + tabName);
+    if (el) el.style.display = 'flex';
+    activeTab = tabName;
+  }
+
+  // Panel collapse
+  function togglePanel() {
+    panelCollapsed = !panelCollapsed;
+    const panel = document.getElementById('detailPanel');
+    const btn = document.getElementById('panelToggle');
+    panel.classList.toggle('collapsed', panelCollapsed);
+    btn.textContent = panelCollapsed ? '▴ Expand' : '▾ Collapse';
+  }
+
+  // Row selection
+  function selectRow(el, stem, ext, side) {
+    if (selectedRow) selectedRow.classList.remove('selected');
+    if (!side) { // only select unprocessed rows actively
+      el.classList.add('selected');
+      selectedRow = el;
+      const fname = stem + '.' + ext;
+      document.getElementById('dp-fname').textContent = fname;
+      if (panelCollapsed) togglePanel();
+    }
+  }
+
+  // Mark filename as modified
+  function markModified(input) {
+    const originalVal = input.defaultValue || input.getAttribute('data-original') || '';
+    if (!input.getAttribute('data-original')) {
+      input.setAttribute('data-original', input.value);
+    }
+    const isDirty = input.value !== input.getAttribute('data-original');
+    input.classList.toggle('modified', isDirty);
+    updateChangeCounts();
+  }
+
+  function updateChangeCounts() {
+    const modified = document.querySelectorAll('.fname-input.modified').length;
+    const removed = document.querySelectorAll('.font-row.queued-remove').length;
+    changeCount = modified + removed;
+    removalCount = removed;
+
+    document.getElementById('changeCount').textContent = changeCount;
+    const applyBtn = document.getElementById('applyBtn');
+    applyBtn.classList.toggle('idle', changeCount === 0);
+
+    const sbChanges = document.getElementById('sb-changes');
+    sbChanges.style.display = modified > 0 ? 'flex' : 'none';
+    document.getElementById('sb-chcount').textContent = modified;
+
+    const sbRemovals = document.getElementById('sb-removals');
+    sbRemovals.style.display = removed > 0 ? 'flex' : 'none';
+    document.getElementById('sb-rmcount').textContent = removed;
+  }
+
+  // Select duplicate rows
+  function selectDuplicates() {
+    document.querySelectorAll('.font-row.duplicate .row-check input').forEach(cb => {
+      cb.checked = true;
+    });
+  }
+
+  // Queue removal of checked rows
+  function queueRemoveSelected() {
+    document.querySelectorAll('.row-check input:checked').forEach(cb => {
+      const row = cb.closest('.font-row');
+      if (row) {
+        row.classList.add('queued-remove');
+        cb.checked = false;
+      }
+    });
+    updateChangeCounts();
+  }
+
+  // Family selection
+  function selectFamily(el, name, count, status) {
+    document.querySelectorAll('.family-item').forEach(f => f.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('tt-fname').textContent = name;
+    document.getElementById('tt-unproc').textContent = count;
+    const statusEl = document.getElementById('tt-status');
+    if (status === 'review') {
+      statusEl.textContent = '⚠ Review recommended';
+      statusEl.style.color = 'var(--amber)';
+    } else if (status === 'new') {
+      statusEl.textContent = '✦ Not in processed collection';
+      statusEl.style.color = 'var(--blue)';
+    } else if (status === 'conflict') {
+      statusEl.textContent = '⊛ Name conflicts detected';
+      statusEl.style.color = 'var(--violet)';
+    } else {
+      statusEl.textContent = '✓ Safe to skip';
+      statusEl.style.color = 'var(--green)';
+    }
+  }
+
+  // Filter sidebar
+  function filterFamilies(val) {
+    const q = val.toLowerCase();
+    document.querySelectorAll('.family-item').forEach(item => {
+      const name = item.querySelector('.fi-name').textContent.toLowerCase();
+      item.style.display = (!q || name.includes(q)) ? 'flex' : 'none';
+    });
+  }
+
+  // Apply all
+  function applyAll() {
+    if (changeCount === 0) return;
+    const modified = document.querySelectorAll('.fname-input.modified');
+    modified.forEach(input => {
+      input.setAttribute('data-original', input.value);
+      input.classList.remove('modified');
+    });
+    document.querySelectorAll('.font-row.queued-remove').forEach(row => row.remove());
+    changeCount = 0;
+    removalCount = 0;
+    document.getElementById('changeCount').textContent = '0';
+    document.getElementById('applyBtn').classList.add('idle');
+    document.getElementById('sb-changes').style.display = 'none';
+    document.getElementById('sb-removals').style.display = 'none';
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,54 @@
+/**
+ * Prototype-aligned theme for Workbench view (dark, IDE-style).
+ * Mirrors fontworkbench-prototype.html palette and typography.
+ */
+.theme-workbench {
+  --wb-bg: #0f1012;
+  --wb-bg2: #141517;
+  --wb-bg3: #191b1e;
+  --wb-bg4: #1e2023;
+  --wb-border: #252729;
+  --wb-border2: #2e3033;
+  --wb-txt: #dde1e7;
+  --wb-txt2: #7f8590;
+  --wb-txt3: #454a52;
+  --wb-mono: #c5cad3;
+
+  --wb-green: #2dd4a0;
+  --wb-green-bg: #0d2e22;
+  --wb-amber: #f5a623;
+  --wb-amber-bg: #2a1e06;
+  --wb-blue: #4d9cff;
+  --wb-blue-bg: #0e2040;
+  --wb-red: #ff5e5e;
+  --wb-red-bg: #2a0e0e;
+  --wb-violet: #a78bfa;
+  --wb-violet-bg: #1e1030;
+
+  /* Row states: selection (blue) vs duplicate/conflict (amber) */
+  --wb-selection-bg: #182030;
+  --wb-dup-bg: #1c1a12;
+  --wb-dup-border: #3d3210;
+
+  --wb-titlebar-h: 44px;
+  --wb-statusbar-h: 28px;
+  --wb-sidebar-w: 220px;
+}
+
+.theme-workbench,
+.theme-workbench .workbenchRoot {
+  background: var(--wb-bg);
+  color: var(--wb-txt);
+}
+
+/* Map global tokens to prototype palette so child components pick up dark theme */
+.theme-workbench {
+  --color-bg: var(--wb-bg);
+  --color-bg-elevated: var(--wb-bg2);
+  --color-text: var(--wb-txt);
+  --color-text-muted: var(--wb-txt2);
+  --color-border: var(--wb-border);
+  --color-border-strong: var(--wb-border2);
+  --color-accent: var(--wb-amber);
+  --color-accent-muted: var(--wb-amber-bg);
+}

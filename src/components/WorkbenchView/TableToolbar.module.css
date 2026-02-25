@@ -1,0 +1,100 @@
+/* Prototype-aligned table toolbar */
+
+.toolbar {
+  height: 38px;
+  background: var(--wb-bg2);
+  border-bottom: 1px solid var(--wb-border);
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.familyName {
+  font-family: "Geist", var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--wb-txt);
+}
+
+.meta {
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 10px;
+  color: var(--wb-txt3);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.meta strong {
+  color: var(--wb-txt2);
+  font-weight: 400;
+}
+
+.right {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.selBtn {
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: 3px;
+  border: 1px solid var(--wb-border2);
+  background: transparent;
+  color: var(--wb-txt2);
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.selBtn:hover:not(:disabled) {
+  background: var(--wb-bg4);
+  color: var(--wb-txt);
+}
+
+.selBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.selBtnDanger {
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: 3px;
+  border: 1px solid #3d1010;
+  background: transparent;
+  color: var(--wb-red);
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.selBtnDanger:hover:not(:disabled) {
+  background: var(--wb-red-bg);
+}
+
+.selBtnDanger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.statusConflict {
+  color: var(--wb-violet);
+}
+
+.statusReview {
+  color: var(--wb-amber);
+}
+
+.statusNew {
+  color: var(--wb-blue);
+}
+
+.statusClean {
+  color: var(--wb-green);
+}

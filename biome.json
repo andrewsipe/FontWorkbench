@@ -1,0 +1,65 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.4.4/schema.json",
+  "files": {
+    "ignoreUnknown": false,
+    "includes": [
+      "**",
+      "!dist",
+      "!node_modules",
+      "!**/*.tsbuildinfo",
+      "!.vite",
+      "!eslint.config.js",
+      "!fontworkbench-prototype.html"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100,
+    "lineEnding": "lf"
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "a11y": { "recommended": true, "noLabelWithoutControl": "off", "useButtonType": "warn" },
+      "correctness": {
+        "recommended": true,
+        "noUnusedVariables": "warn",
+        "noUnusedImports": "warn"
+      },
+      "style": {
+        "recommended": true,
+        "useSelfClosingElements": "error",
+        "useFragmentSyntax": "error",
+        "noNonNullAssertion": "warn"
+      },
+      "suspicious": { "recommended": true, "noConsole": "off", "noDoubleEquals": "error" }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "jsxQuoteStyle": "double",
+      "trailingCommas": "es5",
+      "semicolons": "always"
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["src/engine/**/*.ts", "src/types/**/*.ts", "src/workers/**/*.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": { "noExplicitAny": "off" },
+          "correctness": { "noUnusedVariables": "off" },
+          "style": { "noNonNullAssertion": "off" }
+        }
+      }
+    },
+    {
+      "includes": ["src/types/**/*.d.ts"],
+      "linter": { "rules": { "correctness": { "noUnusedVariables": "off" } } }
+    }
+  ]
+}

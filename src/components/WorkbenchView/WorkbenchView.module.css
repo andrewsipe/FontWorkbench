@@ -1,0 +1,196 @@
+/* Prototype-aligned Workbench layout and titlebar */
+
+.workbench {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--wb-bg);
+  color: var(--wb-txt);
+  font-family: "Geist", var(--font-sans);
+  font-size: 13px;
+}
+
+/* ── Titlebar ── */
+.titlebar {
+  height: var(--wb-titlebar-h, 44px);
+  background: var(--wb-bg2);
+  border-bottom: 1px solid var(--wb-border);
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.logo {
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--wb-txt);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.logoIcon {
+  width: 22px;
+  height: 22px;
+  background: var(--wb-green);
+  border-radius: 5px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  color: var(--wb-bg);
+  font-weight: 700;
+}
+
+.tbDivider {
+  width: 1px;
+  height: 20px;
+  background: var(--wb-border2);
+}
+
+.tbStats {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.tbStat {
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 11px;
+  color: var(--wb-txt3);
+}
+
+.tbStat strong {
+  color: var(--wb-txt2);
+  font-weight: 400;
+}
+
+.tbRight {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.tbProgress {
+  font-size: 11px;
+  color: var(--wb-txt3);
+  margin-right: 4px;
+}
+
+.btnGhost {
+  background: var(--wb-bg4);
+  border: 1px solid var(--wb-border2);
+  border-radius: 5px;
+  padding: 5px 12px;
+  font-family: "Geist", var(--font-sans);
+  font-size: 11px;
+  color: var(--wb-txt2);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.btnGhost:hover:not(:disabled) {
+  background: var(--wb-bg3);
+  color: var(--wb-txt);
+}
+
+.btnGhost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btnApply {
+  background: var(--wb-amber);
+  border: none;
+  border-radius: 5px;
+  padding: 6px 16px;
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #0f0e0a;
+  cursor: pointer;
+  transition: background 0.12s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btnApply:hover:not(:disabled) {
+  background: #fbb740;
+}
+
+.btnApply:disabled {
+  cursor: not-allowed;
+}
+
+.btnApplyIdle {
+  background: var(--wb-bg4);
+  border: 1px solid var(--wb-border2);
+  border-radius: 5px;
+  padding: 6px 16px;
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 11px;
+  color: var(--wb-txt3);
+  cursor: default;
+}
+
+.btnApplyIdle:hover {
+  background: var(--wb-bg4);
+}
+
+.applyBadge {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 10px;
+}
+
+/* ── Main content ── */
+.main {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: var(--wb-sidebar-w, 220px);
+  min-width: 180px;
+  min-height: 0;
+  border-right: 1px solid var(--wb-border);
+  background: var(--wb-bg2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.tableArea {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: var(--wb-txt2);
+  text-align: center;
+}
