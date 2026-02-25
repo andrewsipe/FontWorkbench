@@ -287,6 +287,32 @@
   color: var(--wb-blue);
 }
 
+.featNote {
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 9px;
+  color: var(--wb-txt3);
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+
+.featNoteDot {
+  color: var(--wb-blue);
+}
+
+.glyphGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--wb-txt2);
+}
+
+.glyphCell {
+  width: 1.5em;
+  text-align: center;
+}
+
 /* Glyphs tab */
 .tabGlyphs {
   flex: 1;

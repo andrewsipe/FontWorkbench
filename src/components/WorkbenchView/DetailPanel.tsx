@@ -3,13 +3,56 @@
  * Prototype-aligned: tabs in header, collapse button, left/right compare layout.
  */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { IndexRecord } from "../../lib/indexBuilder";
 import { useWorkbenchStore } from "../../stores/workbenchStore";
 import type { CachedFont } from "../../types/font.types";
 import styles from "./DetailPanel.module.css";
 
 type DetailTab = "compare" | "features" | "glyphs";
+
+const PREVIEW_CHARS =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&?ÀÁÂÄÇÉÑÖÜàáâäçéñöü".split(
+    ""
+  );
+
+function useInjectedFont(font: CachedFont | null): string | null {
+  const [fontFamily, setFontFamily] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!font?.fileData) return;
+    const id = `wb-preview-${font.id}`;
+    const existing = document.getElementById(id);
+    if (existing) {
+      setFontFamily(id);
+      return;
+    }
+
+    const mime =
+      font.format === "otf"
+        ? "font/otf"
+        : font.format === "ttf"
+          ? "font/ttf"
+          : font.format === "woff2"
+            ? "font/woff2"
+            : "font/woff";
+    const blob = new Blob([font.fileData], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const style = document.createElement("style");
+    style.id = id;
+    style.textContent = `@font-face { font-family: "${id}"; src: url("${url}"); }`;
+    document.head.appendChild(style);
+    setFontFamily(id);
+
+    return () => {
+      URL.revokeObjectURL(url);
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    };
+  }, [font?.id, font?.fileData, font?.format]);
+
+  return fontFamily;
+}
 
 function DetailPanel() {
   const { unprocessedItems, selectedFontFilePath, matchResults } = useWorkbenchStore();
@@ -25,6 +68,8 @@ function DetailPanel() {
   const selectedFileName = selected
     ? (selected.font.fileName ?? selected.filePath.split("/").pop() ?? selected.filePath)
     : null;
+
+  const injectedFontFamily = useInjectedFont(selected?.font ?? null);
 
   return (
     <section
@@ -102,30 +147,12 @@ function DetailPanel() {
               )}
 
               {activeTab === "features" && (
-                <div className={styles.tabFeatures}>
-                  <div className={styles.featSide}>
-                    <div className={styles.featLabel}>
-                      Unprocessed — {selectedFileName} ({(selected.font.features ?? []).length}{" "}
-                      features)
-                    </div>
-                    <div className={styles.featGrid}>
-                      {(selected.font.features ?? []).map((tag) => (
-                        <span key={tag} className={styles.featTag}>
-                          {tag}
-                        </span>
-                      ))}
-                      {(selected.font.features ?? []).length === 0 && (
-                        <span className={styles.muted}>No feature list</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className={styles.featSide}>
-                    <div className={styles.featLabel}>
-                      Processed — {matchedRecord?.fileName ?? "—"} (matched collection)
-                    </div>
-                    <p className={styles.muted}>Feature list from index not shown here yet.</p>
-                  </div>
-                </div>
+                <FeatureComparison
+                  unprocessedFeatures={selected.font.features ?? []}
+                  processedFeatures={matchedRecord?.featureTags ?? []}
+                  unprocessedFileName={selectedFileName ?? ""}
+                  processedFileName={matchedRecord?.fileName ?? "—"}
+                />
               )}
 
               {activeTab === "glyphs" && (
@@ -135,15 +162,29 @@ function DetailPanel() {
                       Unprocessed —{" "}
                       {selected.font.glyphCount ?? selected.font.misc?.glyphCount ?? 0} glyphs
                     </div>
-                    <p className={styles.muted}>
-                      Glyph grid requires per-glyph data; count only for now.
-                    </p>
+                    <div className={styles.glyphGrid}>
+                      {PREVIEW_CHARS.map((char) => (
+                        <div
+                          key={char}
+                          className={styles.glyphCell}
+                          style={
+                            injectedFontFamily
+                              ? { fontFamily: `"${injectedFontFamily}"` }
+                              : undefined
+                          }
+                        >
+                          {char}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                   <div className={styles.glyphSide}>
                     <div className={styles.glyphLabel}>
-                      Processed — {matchedRecord ? "see index" : "—"} glyphs
+                      Processed — {matchedRecord ? `${matchedRecord.glyphCount} glyphs` : "—"}
                     </div>
-                    <p className={styles.muted}>Glyph count from matched record when available.</p>
+                    <p className={styles.muted}>
+                      Open in viewer to inspect glyphs. Glyph count from matched record.
+                    </p>
                   </div>
                 </div>
               )}
@@ -152,6 +193,73 @@ function DetailPanel() {
         </div>
       )}
     </section>
+  );
+}
+
+function FeatureComparison({
+  unprocessedFeatures,
+  processedFeatures,
+  unprocessedFileName,
+  processedFileName,
+}: {
+  unprocessedFeatures: string[];
+  processedFeatures: string[];
+  unprocessedFileName: string;
+  processedFileName: string;
+}) {
+  const unprocessedTags = new Set(unprocessedFeatures);
+  const processedTags = new Set(processedFeatures);
+  const shared = unprocessedFeatures.filter((t) => processedTags.has(t));
+  const onlyUnprocessed = unprocessedFeatures.filter((t) => !processedTags.has(t));
+  const onlyProcessed = processedFeatures.filter((t) => !unprocessedTags.has(t));
+
+  return (
+    <div className={styles.tabFeatures}>
+      <div className={styles.featSide}>
+        <div className={styles.featLabel}>
+          Unprocessed — {unprocessedFileName} ({unprocessedFeatures.length} features)
+        </div>
+        <div className={styles.featGrid}>
+          {shared.map((tag) => (
+            <span key={tag} className={`${styles.featTag} ${styles.featTagShared}`}>
+              {tag}
+            </span>
+          ))}
+          {onlyUnprocessed.map((tag) => (
+            <span key={tag} className={`${styles.featTag} ${styles.featTagOnly}`}>
+              {tag}
+            </span>
+          ))}
+          {unprocessedFeatures.length === 0 && (
+            <span className={styles.muted}>No feature list</span>
+          )}
+        </div>
+        {onlyUnprocessed.length > 0 && (
+          <p className={styles.featNote}>
+            <span className={styles.featNoteDot} aria-hidden /> {onlyUnprocessed.length} features
+            only in unprocessed
+          </p>
+        )}
+      </div>
+      <div className={styles.featSide}>
+        <div className={styles.featLabel}>
+          Processed — {processedFileName} ({processedFeatures.length} features)
+        </div>
+        <div className={styles.featGrid}>
+          {shared.map((tag) => (
+            <span key={tag} className={`${styles.featTag} ${styles.featTagShared}`}>
+              {tag}
+            </span>
+          ))}
+          {onlyProcessed.map((tag) => (
+            <span key={tag} className={styles.featTag}>
+              {tag}
+            </span>
+          ))}
+          {processedFeatures.length === 0 && <span className={styles.muted}>No feature list</span>}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -224,7 +332,7 @@ function MatchedSummary({ record }: { record: IndexRecord }) {
         <span className={styles.cgKey}>Glyphs</span>
         <span className={styles.cgVal}>{glyphCount}</span>
         <span className={styles.cgKey}>Features</span>
-        <span className={styles.cgVal}>—</span>
+        <span className={styles.cgVal}>{(record.featureTags ?? []).length || "—"}</span>
         <span className={styles.cgKey}>File size</span>
         <span className={styles.cgVal}>—</span>
         <span className={styles.cgKey}>Format</span>

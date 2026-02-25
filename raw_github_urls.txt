@@ -1,0 +1,135 @@
+# Root directory
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/README.md
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/biome.json
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/fontworkbench-prototype.html
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/index.html
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/package-lock.json
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/package.json
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/tsconfig.app.json
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/tsconfig.json
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/tsconfig.node.json
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/vite.config.ts
+
+# docs/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/docs/PROTOTYPE-GAP-ANALYSIS.md
+
+# public/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/public/vite.svg
+
+# src/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/App.css
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/App.tsx
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/index.css
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/main.tsx
+
+# src/assets/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/assets/react.svg
+
+# src/components/SetupView/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/components/SetupView/SetupView.module.css
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/components/SetupView/SetupView.tsx
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/components/SetupView/index.ts
+
+# src/components/WorkbenchView/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/components/WorkbenchView/ApplyBar.module.css
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/components/WorkbenchView/ApplyBar.tsx
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/components/WorkbenchView/DetailPanel.module.css
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/components/WorkbenchView/DetailPanel.tsx
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/components/WorkbenchView/FamilySidebar.module.css
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/components/WorkbenchView/FamilySidebar.tsx
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/components/WorkbenchView/FileTable.module.css
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/components/WorkbenchView/FileTable.tsx
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/components/WorkbenchView/TableToolbar.module.css
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/components/WorkbenchView/TableToolbar.tsx
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/components/WorkbenchView/WorkbenchView.module.css
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/components/WorkbenchView/WorkbenchView.tsx
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/components/WorkbenchView/index.ts
+
+# src/engine/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/FontLoader.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/FontParser.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/TwoPhaseLoader.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/fontParserHelpers.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/fontkitTest.ts
+
+# src/engine/cache/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/cache/FontCache.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/cache/FontCacheDB.ts
+
+# src/engine/extractors/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/extractors/AxisExtractor.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/extractors/FeatureExtractor.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/extractors/FeatureUtils.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/extractors/InstanceExtractor.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/extractors/MetadataExtractor.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/extractors/MetricsExtractor.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/extractors/MiscExtractor.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/extractors/NameExtractor.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/extractors/logger.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/extractors/validation.ts
+
+# src/engine/parsers/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/parsers/FontValidator.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/parsers/FontkitParser.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/parsers/OpentypeParser.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/parsers/RawTableParser.ts
+
+# src/engine/parsers/tables/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/parsers/tables/bitmap.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/parsers/tables/core.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/parsers/tables/decoders.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/parsers/tables/displayEnrichers.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/parsers/tables/formatters.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/parsers/tables/index.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/parsers/tables/layout.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/parsers/tables/metrics.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/parsers/tables/other.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/parsers/tables/outlines.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/parsers/tables/stub.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/parsers/tables/tableDefinitions.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/parsers/tables/variable.ts
+
+# src/engine/render/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/render/GlyphRenderer.ts
+
+# src/engine/resolvers/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/resolvers/InstanceResolver.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/resolvers/NameResolver.ts
+
+# src/engine/utils/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/utils/BatchProcessor.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/utils/HashUtils.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/engine/utils/InstanceSorter.ts
+
+# src/lib/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/lib/directoryScanner.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/lib/indexBuilder.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/lib/matcher.test.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/lib/matcher.ts
+
+# src/stores/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/stores/fontStore.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/stores/uiStore.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/stores/workbenchStore.ts
+
+# src/styles/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/styles/variables.css
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/styles/workbench-theme.css
+
+# src/types/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/types/canvas.d.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/types/extractors.types.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/types/filesystem.d.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/types/font.types.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/types/fontkit.d.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/types/ui.types.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/types/wawoff2.d.ts
+
+# src/utils/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/utils/debug.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/utils/fontUtils.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/utils/woffDecompressor.ts
+
+# src/workers/
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/workers/fontParser.worker.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/workers/types.worker.ts

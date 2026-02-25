@@ -22,6 +22,7 @@ export interface IndexRecord {
   fontRevision: number;
   glyphCount: number;
   availableTables: string[];
+  featureTags: string[];
   format: "otf" | "ttf" | "woff" | "woff2";
 }
 
@@ -74,6 +75,7 @@ function cachedFontToIndexRecord(
   const subfamilyName = cached.metadata?.subfamilyName ?? cached.metadata?.preferredSubfamily ?? "";
   const glyphCount = cached.glyphCount ?? cached.misc?.glyphCount ?? 0;
   const availableTables = cached.misc?.availableTables ?? [];
+  const featureTags = cached.features ?? [];
   const fontRevision = cached.fileData ? getFontRevisionFromBuffer(cached.fileData) : 0;
 
   return {
@@ -87,6 +89,7 @@ function cachedFontToIndexRecord(
     fontRevision,
     glyphCount,
     availableTables,
+    featureTags,
     format: cached.format,
   };
 }

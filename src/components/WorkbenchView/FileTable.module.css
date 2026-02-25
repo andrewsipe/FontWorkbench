@@ -8,8 +8,9 @@
 
 .tableScroll {
   flex: 1;
-  overflow: auto;
-  padding: 0 var(--space-md) var(--space-md);
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
 }
 
 /* Prototype: sticky "UNPROCESSED N files" section bar */
@@ -50,9 +51,11 @@
 
 .table th,
 .table td {
-  padding: var(--space-sm) var(--space-md);
+  padding: 0 10px;
   text-align: left;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid #16181a;
+  height: 34px;
+  vertical-align: middle;
 }
 
 .table th {
@@ -63,8 +66,6 @@
   top: 28px;
   z-index: 2;
   height: 28px;
-  padding: 0 10px;
-  vertical-align: middle;
 }
 
 .colName {
@@ -391,4 +392,74 @@
   color: var(--color-text-muted);
   font-size: 0.875rem;
   overflow: auto;
+}
+
+/* Processed section — second sticky header row and dimmed rows */
+.sectionHeaderRow {
+  background: var(--wb-bg);
+  border-bottom: 1px solid var(--wb-border);
+  border-top: 1px solid var(--wb-border2);
+}
+
+.sectionHeaderRow td {
+  padding: 6px 14px 4px;
+  height: auto;
+  vertical-align: middle;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.processedSection tr {
+  opacity: 0.65;
+}
+
+.rowProcessed td {
+  pointer-events: none;
+}
+
+.rowProcessed td.cellNameInline {
+  pointer-events: auto;
+}
+
+.countMatch {
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 9px;
+  color: var(--wb-green);
+  margin-left: 8px;
+}
+
+.countMismatch {
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 9px;
+  color: var(--wb-amber);
+  margin-left: 8px;
+}
+
+/* Inline Remove in filename cell */
+.cellNameWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
+.cellNameActions {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.inlineRemove {
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 10px;
+  color: var(--wb-red);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.inlineRemove:hover {
+  text-decoration: underline;
 }

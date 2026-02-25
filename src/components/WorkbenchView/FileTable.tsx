@@ -11,15 +11,6 @@ import { getFamilyStatus } from "./FamilySidebar";
 import styles from "./FileTable.module.css";
 import TableToolbar from "./TableToolbar";
 
-const ACTION_LABELS: Record<SuggestedAction, string> = {
-  SKIP: "Skip",
-  UPGRADE: "Upgrade",
-  REVIEW: "Review",
-  NEW: "New",
-  CONFLICT: "Conflict",
-  PROBLEM: "Problem",
-};
-
 function isValidFileName(name: string): boolean {
   const trimmed = name.trim();
   if (trimmed.length === 0) return false;
@@ -95,6 +86,11 @@ function FileTable() {
         itemsToShow.filter((i) => isDuplicate(i.filePath, matchResults)).map((i) => i.filePath)
       ),
     [itemsToShow, matchResults]
+  );
+
+  const matchedProcessedRecords = useMemo(
+    () => (selectedFamily ? processedIndex.filter((r) => r.familyName === selectedFamily) : []),
+    [processedIndex, selectedFamily]
   );
 
   const isInRenameQueue = (filePath: string) => renameQueue.some((q) => q.filePath === filePath);
@@ -182,28 +178,16 @@ function FileTable() {
                 <th scope="col" className={styles.colType}>
                   <span className={styles.colHeader}>Type</span>
                 </th>
-                <th scope="col">
-                  <span className={styles.colHeader}>Family</span>
-                </th>
-                <th scope="col">
-                  <span className={styles.colHeader}>Match</span>
-                </th>
-                <th scope="col">
-                  <span className={styles.colHeader}>Actions</span>
-                </th>
               </tr>
             </thead>
             <tbody>
               {itemsToShow.map((item) => {
                 const { font, filePath } = item;
                 const result = matchResults.get(filePath);
-                const action = result?.action ?? "REVIEW";
                 const fileName = font.fileName ?? filePath.split("/").pop() ?? filePath;
                 const { stem: defaultStem, ext } = splitStemExt(fileName);
                 const queuedName = getQueuedNewName(filePath);
                 const displayStem = queuedName ? splitStemExt(queuedName).stem : defaultStem;
-                const family =
-                  font.metadata?.preferredFamily ?? font.metadata?.familyName ?? font.name;
                 const version = font.metadata?.version ?? "—";
                 const glyphCount = font.glyphCount ?? font.misc?.glyphCount ?? 0;
                 const featCount = (font.features ?? []).length;
@@ -254,19 +238,48 @@ function FileTable() {
                       onClick={(e) => e.stopPropagation()}
                       onKeyDown={(e) => e.stopPropagation()}
                     >
-                      <input
-                        type="text"
-                        className={`${styles.fnameStem} ${inRename && queuedName !== fileName ? styles.modified : ""}`}
-                        value={displayStem}
-                        placeholder="Edit filename"
-                        onChange={(e) => queueRename(filePath, e.target.value + ext)}
-                        onBlur={(e) => handleFilenameBlur(filePath, fileName, ext, e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") e.currentTarget.blur();
-                        }}
-                        aria-label={`Filename for ${fileName}`}
-                      />
-                      {ext ? <span className={styles.fnameExt}>{ext}</span> : null}
+                      <div className={styles.cellNameWrap}>
+                        <input
+                          type="text"
+                          className={`${styles.fnameStem} ${inRename && queuedName !== fileName ? styles.modified : ""}`}
+                          value={displayStem}
+                          placeholder="Edit filename"
+                          onChange={(e) => queueRename(filePath, e.target.value + ext)}
+                          onBlur={(e) =>
+                            handleFilenameBlur(filePath, fileName, ext, e.target.value)
+                          }
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") e.currentTarget.blur();
+                          }}
+                          aria-label={`Filename for ${fileName}`}
+                        />
+                        {ext ? <span className={styles.fnameExt}>{ext}</span> : null}
+                        <span className={styles.cellNameActions}>
+                          {inRemoval ? (
+                            <button
+                              type="button"
+                              className={styles.inlineRemove}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                cancelQueueItem(filePath);
+                              }}
+                            >
+                              Cancel remove
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              className={styles.inlineRemove}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                queueRemoval(filePath);
+                              }}
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </span>
+                      </div>
                     </td>
                     <td className={styles.cellVer}>
                       <span className={styles.cv}>{version}</span>
@@ -290,37 +303,64 @@ function FileTable() {
                         {typeLabel}
                       </span>
                     </td>
-                    <td>{family}</td>
-                    <td>
-                      <span className={styles[`action_${action}`] ?? styles.actionDefault}>
-                        {ACTION_LABELS[action]}
-                      </span>
-                    </td>
-                    <td onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
-                      <div className={styles.cellActions}>
-                        {inRemoval ? (
-                          <button
-                            type="button"
-                            className={styles.queueBtnDanger}
-                            onClick={() => cancelQueueItem(filePath)}
-                          >
-                            Cancel remove
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            className={styles.queueBtnDanger}
-                            onClick={() => queueRemoval(filePath)}
-                          >
-                            Remove
-                          </button>
-                        )}
-                      </div>
-                    </td>
                   </tr>
                 );
               })}
             </tbody>
+            {matchedProcessedRecords.length > 0 && (
+              <>
+                <tbody>
+                  <tr>
+                    <td colSpan={8} className={styles.sectionHeaderRow}>
+                      <span className={styles.sectionLabel}>Processed — Matched Collection</span>
+                      <span className={styles.sectionCount}>
+                        {matchedProcessedRecords.length} files
+                      </span>
+                      {itemsToShow.length === matchedProcessedRecords.length ? (
+                        <span className={styles.countMatch}>✓ Count matches</span>
+                      ) : (
+                        <span className={styles.countMismatch}>⚠ Count differs</span>
+                      )}
+                    </td>
+                  </tr>
+                </tbody>
+                <tbody className={styles.processedSection}>
+                  {matchedProcessedRecords.map((record) => (
+                    <tr key={record.filePath} className={styles.rowProcessed}>
+                      <td className={styles.cellCheck} aria-hidden />
+                      <td className={`${styles.cellName} ${styles.cellNameInline}`}>
+                        <span className={styles.fnameStem}>
+                          {splitStemExt(record.fileName).stem}
+                        </span>
+                        <span className={styles.fnameExt}>{splitStemExt(record.fileName).ext}</span>
+                      </td>
+                      <td className={styles.cellVer}>
+                        <span className={styles.cv}>{record.version || "—"}</span>
+                      </td>
+                      <td className={styles.cellDate}>
+                        <span className={styles.cv}>—</span>
+                      </td>
+                      <td className={styles.cellGlyphs}>
+                        <span className={styles.cv}>{record.glyphCount}</span>
+                      </td>
+                      <td className={styles.cellFeat}>
+                        <span className={styles.cv}>—</span>
+                      </td>
+                      <td className={styles.cellSize}>
+                        <span className={styles.cv}>—</span>
+                      </td>
+                      <td className={styles.cellType}>
+                        <span
+                          className={`${styles.typeBadge} ${styles[TYPE_BADGE_CLASS[record.format] ?? "typeOtf"]}`}
+                        >
+                          {record.format.toUpperCase()}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </>
+            )}
           </table>
         </div>
       )}
