@@ -6,7 +6,13 @@
 import { create } from "zustand";
 import { collectFontHandlesWithParents, parseFontHandle } from "../lib/directoryScanner";
 import type { IndexRecord, Progress } from "../lib/indexBuilder";
-import { getAppConfig, loadIndex, rebuildIndex as rebuildIndexDb } from "../lib/indexBuilder";
+import {
+  getAppConfig,
+  loadIndex,
+  loadProcessedHandle,
+  rebuildIndex as rebuildIndexDb,
+  saveProcessedHandle,
+} from "../lib/indexBuilder";
 import type { MatchResult } from "../lib/matcher";
 import { matchFont } from "../lib/matcher";
 import type { CachedFont } from "../types/font.types";
@@ -73,6 +79,9 @@ export interface WorkbenchState {
   // Loading / progress
   scanProgress: Progress | null;
   indexProgress: Progress | null;
+
+  /** True when a persisted processed handle exists but permission was not granted on init (show re-auth banner). */
+  processedHandleNeedsReauth: boolean;
 }
 
 export interface WorkbenchActions {
@@ -80,6 +89,7 @@ export interface WorkbenchActions {
   setProcessedDir: (handle: FileSystemDirectoryHandle | null) => Promise<void>;
   setUnprocessedDir: (handle: FileSystemDirectoryHandle | null) => void;
   loadProcessedIndex: () => Promise<void>;
+  restoreProcessedHandle: () => Promise<void>;
   scanUnprocessed: (onProgress?: (p: Progress) => void) => Promise<void>;
   selectFamily: (family: string | null) => void;
   selectFont: (filePath: string | null) => void;
@@ -110,6 +120,7 @@ const initialState: WorkbenchState = {
   removalQueue: [],
   scanProgress: null,
   indexProgress: null,
+  processedHandleNeedsReauth: false,
 };
 
 export const useWorkbenchStore = create<WorkbenchStore>((set, get) => ({
@@ -123,11 +134,13 @@ export const useWorkbenchStore = create<WorkbenchStore>((set, get) => ({
       processedIndex: [],
       indexLoaded: false,
       appConfig: handle ? await getAppConfig().then((c) => (c ? { ...c } : null)) : null,
+      processedHandleNeedsReauth: false,
     });
     if (!handle) {
       set({ appConfig: null });
       return;
     }
+    await saveProcessedHandle(handle);
     const records = await loadIndex();
     set({
       processedIndex: records ?? [],
@@ -156,6 +169,32 @@ export const useWorkbenchStore = create<WorkbenchStore>((set, get) => ({
       indexLoaded: true,
       appConfig: config ? { ...config } : null,
     });
+  },
+
+  restoreProcessedHandle: async () => {
+    const handle = await loadProcessedHandle();
+    if (!handle) return;
+    const permission =
+      typeof handle.requestPermission === "function"
+        ? await handle.requestPermission({ mode: "read" })
+        : "granted";
+    if (permission === "granted") {
+      set({
+        processedDirHandle: handle,
+        processedIndex: [],
+        indexLoaded: false,
+        processedHandleNeedsReauth: false,
+      });
+      const records = await loadIndex();
+      const config = await getAppConfig();
+      set({
+        processedIndex: records ?? [],
+        indexLoaded: true,
+        appConfig: config ? { ...config } : null,
+      });
+    } else {
+      set({ processedHandleNeedsReauth: true });
+    }
   },
 
   scanUnprocessed: async (onProgress) => {

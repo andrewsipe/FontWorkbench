@@ -66,10 +66,11 @@
 }
 
 .familyItem {
-  padding: 7px 14px;
+  position: relative;
+  padding: 7px 14px 7px 16px;
   cursor: pointer;
   border: none;
-  border-left: 2px solid transparent;
+  border-radius: 6px;
   transition: all 0.1s;
   display: flex;
   align-items: center;
@@ -81,13 +82,28 @@
   text-align: left;
 }
 
-.familyItem:hover {
-  background: var(--wb-bg3);
+.familyItem::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 20%;
+  height: 60%;
+  width: 2px;
+  border-radius: 2px;
+  background: transparent;
+  transition: background 0.1s;
+}
+
+.familyItem:hover::before {
+  background: var(--wb-txt3);
 }
 
 .familyItemActive {
   background: var(--wb-bg4);
-  border-left-color: var(--wb-green);
+}
+
+.familyItemActive::before {
+  background: var(--wb-green);
 }
 
 .fiFlag {

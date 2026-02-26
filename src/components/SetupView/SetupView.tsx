@@ -16,6 +16,7 @@ function SetupView() {
     indexLoaded,
     appConfig,
     indexProgress,
+    processedHandleNeedsReauth,
     setProcessedDir,
     setUnprocessedDir,
     loadProcessedIndex,
@@ -27,12 +28,34 @@ function SetupView() {
 
   const [status, setStatus] = useState<string>("");
   const [scanStatus, setScanStatus] = useState<string>("");
+  const [processedDragOver, setProcessedDragOver] = useState(false);
+  const [unprocessedDragOver, setUnprocessedDragOver] = useState(false);
 
   const processedName = processedDirHandle?.name ?? appConfig?.processedDirName ?? "—";
   const unprocessedName = unprocessedDirHandle?.name ?? "—";
   const lastIndexed = appConfig?.lastIndexed
     ? new Date(appConfig.lastIndexed).toLocaleString()
     : "—";
+
+  const handleDrop = useCallback(
+    async (e: React.DragEvent, target: "processed" | "unprocessed") => {
+      e.preventDefault();
+      if (target === "processed") setProcessedDragOver(false);
+      else setUnprocessedDragOver(false);
+      const items = Array.from(e.dataTransfer.items);
+      for (const item of items) {
+        const handle = await item.getAsFileSystemHandle?.();
+        if (handle?.kind === "directory") {
+          if (target === "processed") {
+            await setProcessedDir(handle as FileSystemDirectoryHandle);
+          } else {
+            setUnprocessedDir(handle as FileSystemDirectoryHandle);
+          }
+        }
+      }
+    },
+    [setProcessedDir, setUnprocessedDir]
+  );
 
   const handlePickProcessed = useCallback(async () => {
     if (!hasPicker) {
@@ -121,70 +144,121 @@ function SetupView() {
   const indexing = indexProgress !== null;
   const scanning = scanProgress !== null;
 
+  const processedIndexStatus =
+    indexLoaded && processedIndex.length > 0 && appConfig
+      ? `${processedName} · ${processedIndex.length} records · Last built ${lastIndexed}`
+      : null;
+
   return (
     <div className={styles.setup}>
-      <h1 className={styles.title}>Font Workbench</h1>
-      <p className={styles.subtitle}>Setup</p>
+      <div className={styles.card}>
+        <h1 className={styles.title}>Font Workbench</h1>
+        <p className={styles.subtitle}>Setup</p>
 
-      <section className={styles.section} aria-labelledby="processed-heading">
-        <h2 id="processed-heading" className={styles.sectionTitle}>
-          Processed collection
-        </h2>
-        <p className={styles.meta}>
-          Directory: <strong>{processedName}</strong>
-          {indexLoaded && (
-            <>
-              {" "}
-              · Index: <strong>{processedIndex.length}</strong> records
-              {lastIndexed !== "—" && ` · Last built ${lastIndexed}`}
-            </>
+        {processedHandleNeedsReauth && (
+          <p className={styles.reauthBanner} role="status">
+            Re-authorize processed collection to skip rescanning.
+          </p>
+        )}
+
+        <section className={styles.section} aria-labelledby="processed-heading">
+          <h2 id="processed-heading" className={styles.sectionTitle}>
+            Processed collection
+          </h2>
+          {processedIndexStatus ? (
+            <p className={styles.indexStatus}>
+              {processedIndexStatus}
+              {" · "}
+              <button
+                type="button"
+                className={styles.linkButton}
+                onClick={handleBuildIndex}
+                disabled={!processedDirHandle || indexing}
+              >
+                Rebuild index
+              </button>
+            </p>
+          ) : (
+            <p className={styles.indexStatus}>No index built yet. Pick a directory to scan.</p>
           )}
-        </p>
+          <div
+            role="button"
+            tabIndex={0}
+            className={`${styles.dropZone} ${processedDirHandle ? styles.hasDir : ""} ${processedDragOver ? styles.dragOver : ""}`}
+            onClick={handlePickProcessed}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handlePickProcessed();
+              }
+            }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setProcessedDragOver(true);
+            }}
+            onDragLeave={() => setProcessedDragOver(false)}
+            onDrop={(e) => handleDrop(e, "processed")}
+            aria-label="Choose processed directory"
+          >
+            {processedName !== "—" ? processedName : "Drop folder here or click to choose"}
+          </div>
+          <div className={styles.actions}>
+            <button
+              type="button"
+              className={styles.btn}
+              onClick={handleBuildIndex}
+              disabled={!processedDirHandle || indexing}
+            >
+              {indexLoaded ? "Rebuild index" : "Build index"}
+            </button>
+          </div>
+        </section>
+
+        <section className={styles.section} aria-labelledby="unprocessed-heading">
+          <h2 id="unprocessed-heading" className={styles.sectionTitle}>
+            Unprocessed directory
+          </h2>
+          <div
+            role="button"
+            tabIndex={0}
+            className={`${styles.dropZone} ${unprocessedDirHandle ? styles.hasDir : ""} ${unprocessedDragOver ? styles.dragOver : ""}`}
+            onClick={handlePickUnprocessed}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handlePickUnprocessed();
+              }
+            }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setUnprocessedDragOver(true);
+            }}
+            onDragLeave={() => setUnprocessedDragOver(false)}
+            onDrop={(e) => handleDrop(e, "unprocessed")}
+            aria-label="Choose unprocessed directory"
+          >
+            {unprocessedName !== "—" ? unprocessedName : "Drop folder here or click to choose"}
+          </div>
+        </section>
+
         <div className={styles.actions}>
-          <button type="button" onClick={handlePickProcessed} disabled={indexing}>
-            {processedDirHandle ? "Change processed directory" : "Pick processed directory"}
-          </button>
           <button
             type="button"
-            onClick={handleBuildIndex}
-            disabled={!processedDirHandle || indexing}
+            onClick={handleOpenWorkbench}
+            disabled={!unprocessedDirHandle || scanning}
+            className={styles.btnPrimary}
           >
-            {indexLoaded ? "Rebuild index" : "Build index"}
+            Open Workbench
           </button>
         </div>
-      </section>
 
-      <section className={styles.section} aria-labelledby="unprocessed-heading">
-        <h2 id="unprocessed-heading" className={styles.sectionTitle}>
-          Unprocessed directory
-        </h2>
-        <p className={styles.meta}>
-          Directory: <strong>{unprocessedName}</strong>
-        </p>
-        <div className={styles.actions}>
-          <button type="button" onClick={handlePickUnprocessed} disabled={scanning}>
-            {unprocessedDirHandle ? "Change unprocessed directory" : "Pick unprocessed directory"}
-          </button>
-        </div>
-      </section>
-
-      <div className={styles.actions}>
-        <button
-          type="button"
-          onClick={handleOpenWorkbench}
-          disabled={!unprocessedDirHandle || scanning}
-          className={styles.primary}
-        >
-          Open Workbench
-        </button>
+        {status ? (
+          <p className={styles.status} style={{ whiteSpace: "pre-line" }}>
+            {status}
+          </p>
+        ) : null}
+        {scanStatus ? <p className={styles.status}>{scanStatus}</p> : null}
       </div>
-
-      {status ? (
-        <p className={styles.status} style={{ whiteSpace: "pre-line" }}>
-          {status}
-        </p>
-      ) : null}
-      {scanStatus ? <p className={styles.status}>{scanStatus}</p> : null}
     </div>
   );
 }

@@ -52,7 +52,7 @@ interface FontWorkbenchDBSchema extends DBSchema {
   };
   "app-config": {
     key: string;
-    value: AppConfig;
+    value: AppConfig | { id: "processed-handle"; handle: FileSystemDirectoryHandle };
     indexes: Record<string, never>;
   };
 }
@@ -110,6 +110,24 @@ async function getDB(): Promise<IDBPDatabase<FontWorkbenchDBSchema>> {
       }
     },
   });
+}
+
+/** Persist processed directory handle for restore on next load (Chrome serialises permission reference). */
+export async function saveProcessedHandle(
+  handle: FileSystemDirectoryHandle
+): Promise<void> {
+  const db = await getDB();
+  await db.put("app-config", { id: "processed-handle", handle });
+  db.close();
+}
+
+/** Load persisted processed handle; call requestPermission before using. */
+export async function loadProcessedHandle(): Promise<FileSystemDirectoryHandle | null> {
+  const db = await getDB();
+  const row = await db.get("app-config", "processed-handle");
+  db.close();
+  const entry = row as { handle?: FileSystemDirectoryHandle } | undefined;
+  return entry?.handle ?? null;
 }
 
 /**

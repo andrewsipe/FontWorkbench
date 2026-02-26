@@ -15,6 +15,17 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Focus: no ring on mouse click; subtle keyboard-only ring */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 1px solid var(--color-border-strong);
+  outline-offset: -1px;
+  border-radius: inherit;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
@@ -48,10 +59,6 @@ button {
 }
 button:hover {
   border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
 }
 
 @media (prefers-color-scheme: light) {

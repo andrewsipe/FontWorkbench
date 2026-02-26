@@ -476,13 +476,14 @@ function FileTable() {
               <>
                 <tbody>
                   <tr>
-                    <td colSpan={8} className={styles.sectionHeaderRow}>
+                    <td className={styles.cellCheck} aria-hidden />
+                    <td colSpan={7} className={styles.sectionHeaderRow}>
                       <span className={styles.sectionLabel}>Processed — Matched Collection</span>
-                      <span className={styles.sectionCount}>
+                      <span className={styles.sectionBadge}>
                         {matchedProcessedRecords.length} files
                       </span>
                       {itemsToShow.length === matchedProcessedRecords.length ? (
-                        <span className={styles.countMatch}>✓ Count matches</span>
+                        <span className={styles.sectionMatch}>✓ Count matches</span>
                       ) : (
                         <span className={styles.countMismatch}>⚠ Count differs</span>
                       )}

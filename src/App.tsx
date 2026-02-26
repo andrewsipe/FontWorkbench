@@ -3,17 +3,18 @@ import SetupView from "./components/SetupView";
 import WorkbenchView from "./components/WorkbenchView";
 import { useWorkbenchStore } from "./stores/workbenchStore";
 import "./App.css";
+import "./styles/workbench-theme.css";
 
 function App() {
   const appView = useWorkbenchStore((s) => s.appView);
-  const loadProcessedIndex = useWorkbenchStore((s) => s.loadProcessedIndex);
+  const restoreProcessedHandle = useWorkbenchStore((s) => s.restoreProcessedHandle);
 
   useEffect(() => {
-    loadProcessedIndex();
-  }, [loadProcessedIndex]);
+    restoreProcessedHandle();
+  }, [restoreProcessedHandle]);
 
   return (
-    <div className="app">
+    <div className={`app ${appView === "setup" ? "theme-workbench" : ""}`}>
       {appView === "setup" && <SetupView />}
       {appView === "workbench" && <WorkbenchView />}
     </div>
