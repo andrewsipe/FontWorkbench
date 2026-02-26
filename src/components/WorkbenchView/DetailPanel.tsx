@@ -10,12 +10,19 @@ import { useWorkbenchStore } from "../../stores/workbenchStore";
 import type { CachedFont } from "../../types/font.types";
 import styles from "./DetailPanel.module.css";
 
-/** Resolve a relative path from a directory handle; supports subdirs (e.g. "sub/font.otf"). */
+/**
+ * Resolve a file from the processed root using IndexRecord.filePath.
+ * Uses path segments to traverse subdirs: split by '/', walk with getDirectoryHandle()
+ * for each segment except the last, then getFileHandle() for the final segment.
+ */
 async function getFileByPath(
   root: FileSystemDirectoryHandle,
-  relativePath: string
+  relativePath: string,
+  fallbackFileName?: string
 ): Promise<File> {
-  const parts = relativePath.split("/");
+  const path = ((relativePath ?? "").trim() || fallbackFileName) ?? "";
+  const parts = path.split("/").filter(Boolean);
+  if (parts.length === 0) throw new Error("No file path or fallback fileName");
   if (parts.length === 1) {
     const f = await root.getFileHandle(parts[0]);
     return f.getFile();
@@ -102,7 +109,7 @@ function DetailPanel() {
       return;
     }
     let cancelled = false;
-    getFileByPath(processedDirHandle, matchedRecord.filePath)
+    getFileByPath(processedDirHandle, matchedRecord.filePath, matchedRecord.fileName)
       .then((file) => loadFontFile(file))
       .then((font) => {
         if (!cancelled) {
@@ -121,7 +128,8 @@ function DetailPanel() {
     };
   }, [activeTab, processedDirHandle, matchedRecord]);
 
-  const isLoadingProcessed = activeTab === "glyphs" && matchedRecord && !processedFont && !processedFontError;
+  const isLoadingProcessed =
+    activeTab === "glyphs" && matchedRecord && !processedFont && !processedFontError;
 
   return (
     <section
@@ -244,9 +252,7 @@ function DetailPanel() {
                         {processedFontError}
                       </p>
                     )}
-                    {isLoadingProcessed && (
-                      <p className={styles.muted}>Loading processed font…</p>
-                    )}
+                    {isLoadingProcessed && <p className={styles.muted}>Loading processed font…</p>}
                     {processedFont && !processedFontError && (
                       <div className={styles.glyphGrid}>
                         {PREVIEW_CHARS.map((char) => (
@@ -264,9 +270,12 @@ function DetailPanel() {
                         ))}
                       </div>
                     )}
-                    {!processedFont && !isLoadingProcessed && !processedFontError && matchedRecord && (
-                      <p className={styles.muted}>Open in viewer to inspect glyphs.</p>
-                    )}
+                    {!processedFont &&
+                      !isLoadingProcessed &&
+                      !processedFontError &&
+                      matchedRecord && (
+                        <p className={styles.muted}>Open in viewer to inspect glyphs.</p>
+                      )}
                   </div>
                 </div>
               )}

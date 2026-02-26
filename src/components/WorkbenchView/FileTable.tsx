@@ -6,10 +6,35 @@
 
 import { useCallback, useMemo, useState } from "react";
 import type { SuggestedAction } from "../../lib/matcher";
+import type { UnprocessedItem } from "../../stores/workbenchStore";
 import { useWorkbenchStore } from "../../stores/workbenchStore";
 import { getFamilyStatus } from "./FamilySidebar";
 import styles from "./FileTable.module.css";
 import TableToolbar from "./TableToolbar";
+
+type SortColumnId = "filename" | "version" | "date" | "glyphs" | "feat" | "size" | "type";
+
+function sortKey(item: UnprocessedItem, col: SortColumnId): string | number {
+  const fileName = item.font.fileName ?? item.filePath.split("/").pop() ?? item.filePath;
+  switch (col) {
+    case "filename":
+      return fileName;
+    case "version":
+      return item.font.metadata?.version ?? "";
+    case "date":
+      return ""; // no date data yet
+    case "glyphs":
+      return item.font.glyphCount ?? item.font.misc?.glyphCount ?? 0;
+    case "feat":
+      return (item.font.features ?? []).length;
+    case "size":
+      return item.font.fileData?.byteLength ?? 0;
+    case "type":
+      return item.font.format ?? "";
+    default:
+      return fileName;
+  }
+}
 
 function isValidFileName(name: string): boolean {
   const trimmed = name.trim();
@@ -64,11 +89,30 @@ function FileTable() {
   } = useWorkbenchStore();
 
   const [selectedFilePaths, setSelectedFilePaths] = useState<Set<string>>(new Set());
+  const [sort, setSort] = useState<{ column: SortColumnId; direction: "asc" | "desc" }>({
+    column: "filename",
+    direction: "asc",
+  });
 
   const itemsToShow = useMemo(() => {
     if (!selectedFamily) return unprocessedItems;
     return familyGroups.get(selectedFamily) ?? [];
   }, [unprocessedItems, familyGroups, selectedFamily]);
+
+  const sortedItems = useMemo(() => {
+    const list = [...itemsToShow];
+    const mult = sort.direction === "asc" ? 1 : -1;
+    list.sort((a, b) => {
+      const va = sortKey(a, sort.column);
+      const vb = sortKey(b, sort.column);
+      const cmp =
+        typeof va === "number" && typeof vb === "number"
+          ? va - vb
+          : String(va).localeCompare(String(vb), undefined, { sensitivity: "base" });
+      return mult * cmp;
+    });
+    return list;
+  }, [itemsToShow, sort.column, sort.direction]);
 
   const familyStatus = useMemo(
     () => getFamilyStatus(itemsToShow, matchResults),
@@ -129,6 +173,14 @@ function FileTable() {
     [queueRename, cancelQueueItem, renameQueue]
   );
 
+  const handleSort = useCallback((col: SortColumnId) => {
+    setSort((prev) => {
+      if (prev.column !== col) return { column: col, direction: "asc" };
+      if (prev.direction === "asc") return { column: col, direction: "desc" };
+      return { column: "filename", direction: "asc" };
+    });
+  }, []);
+
   return (
     <div className={styles.wrapper}>
       <TableToolbar
@@ -157,31 +209,143 @@ function FileTable() {
                 <th scope="col" className={styles.colCheck}>
                   <span className={styles.colHeader}>Select</span>
                 </th>
-                <th scope="col" className={styles.colName}>
-                  <span className={styles.colHeader}>Filename</span>
+                <th
+                  scope="col"
+                  className={styles.colName}
+                  aria-sort={
+                    sort.column === "filename"
+                      ? sort.direction === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
+                >
+                  <button
+                    type="button"
+                    className={styles.colSortBtn}
+                    onClick={() => handleSort("filename")}
+                  >
+                    Filename
+                  </button>
                 </th>
-                <th scope="col" className={styles.colVer}>
-                  <span className={styles.colHeader}>Version</span>
+                <th
+                  scope="col"
+                  className={styles.colVer}
+                  aria-sort={
+                    sort.column === "version"
+                      ? sort.direction === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
+                >
+                  <button
+                    type="button"
+                    className={styles.colSortBtn}
+                    onClick={() => handleSort("version")}
+                  >
+                    Version
+                  </button>
                 </th>
-                <th scope="col" className={styles.colDate}>
-                  <span className={styles.colHeader}>Created</span>
+                <th
+                  scope="col"
+                  className={styles.colDate}
+                  aria-sort={
+                    sort.column === "date"
+                      ? sort.direction === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
+                >
+                  <button
+                    type="button"
+                    className={styles.colSortBtn}
+                    onClick={() => handleSort("date")}
+                  >
+                    Created
+                  </button>
                 </th>
-                <th scope="col" className={styles.colGlyphs}>
-                  <span className={styles.colHeader}>Glyphs</span>
+                <th
+                  scope="col"
+                  className={styles.colGlyphs}
+                  aria-sort={
+                    sort.column === "glyphs"
+                      ? sort.direction === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
+                >
+                  <button
+                    type="button"
+                    className={styles.colSortBtn}
+                    onClick={() => handleSort("glyphs")}
+                  >
+                    Glyphs
+                  </button>
                 </th>
-                <th scope="col" className={styles.colFeat}>
-                  <span className={styles.colHeader}>Feat.</span>
+                <th
+                  scope="col"
+                  className={styles.colFeat}
+                  aria-sort={
+                    sort.column === "feat"
+                      ? sort.direction === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
+                >
+                  <button
+                    type="button"
+                    className={styles.colSortBtn}
+                    onClick={() => handleSort("feat")}
+                  >
+                    Feat.
+                  </button>
                 </th>
-                <th scope="col" className={styles.colSize}>
-                  <span className={styles.colHeader}>Size</span>
+                <th
+                  scope="col"
+                  className={styles.colSize}
+                  aria-sort={
+                    sort.column === "size"
+                      ? sort.direction === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
+                >
+                  <button
+                    type="button"
+                    className={styles.colSortBtn}
+                    onClick={() => handleSort("size")}
+                  >
+                    Size
+                  </button>
                 </th>
-                <th scope="col" className={styles.colType}>
-                  <span className={styles.colHeader}>Type</span>
+                <th
+                  scope="col"
+                  className={styles.colType}
+                  aria-sort={
+                    sort.column === "type"
+                      ? sort.direction === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : undefined
+                  }
+                >
+                  <button
+                    type="button"
+                    className={styles.colSortBtn}
+                    onClick={() => handleSort("type")}
+                  >
+                    Type
+                  </button>
                 </th>
               </tr>
             </thead>
             <tbody>
-              {itemsToShow.map((item) => {
+              {sortedItems.map((item) => {
                 const { font, filePath } = item;
                 const result = matchResults.get(filePath);
                 const fileName = font.fileName ?? filePath.split("/").pop() ?? filePath;
@@ -219,6 +383,7 @@ function FileTable() {
                   <tr
                     key={filePath}
                     className={rowClasses || undefined}
+                    data-duplicate={isDuplicateRow ? "true" : undefined}
                     onClick={() => selectFont(isSelected ? null : filePath)}
                   >
                     <td
