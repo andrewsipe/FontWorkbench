@@ -9,7 +9,7 @@
 }
 
 .sidebarHeader {
-  padding: 10px 14px 8px;
+  padding: 10px 14px 9px;
   border-bottom: 1px solid var(--wb-border);
   flex-shrink: 0;
 }

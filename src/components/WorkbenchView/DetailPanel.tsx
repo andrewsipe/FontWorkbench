@@ -316,9 +316,7 @@ function DetailPanel() {
                     {isLoadingProcessedFont && (
                       <p className={styles.muted}>Loading processed font…</p>
                     )}
-                    {processedGlyphsLoading && (
-                      <p className={styles.muted}>Extracting glyphs…</p>
-                    )}
+                    {processedGlyphsLoading && <p className={styles.muted}>Extracting glyphs…</p>}
                     {processedGlyphs.length > 0 && injectedProcessedFontFamily && (
                       <div className={styles.glyphGrid}>
                         {processedGlyphs.map((glyph) => (

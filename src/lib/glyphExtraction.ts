@@ -77,7 +77,8 @@ export async function extractGlyphsFromFont(currentFont: FontForExtraction): Pro
   const featureTags: string[] =
     fontFeatures.length > 0
       ? fontFeatures.map((f) => f.tag)
-      : ((opentypeFont.tables?.gsub?.features as GsubFeature[] | undefined)?.map((f) => f.tag) ?? []);
+      : ((opentypeFont.tables?.gsub?.features as GsubFeature[] | undefined)?.map((f) => f.tag) ??
+        []);
 
   if (featureTags.length > 0 && opentypeFont.tables?.gsub) {
     try {
@@ -124,7 +125,9 @@ export async function extractGlyphsFromFont(currentFont: FontForExtraction): Pro
                   const glyph = opentypeFont.glyphs.get(glyphIndex);
                   const hasUnicode = glyph != null && glyph.unicode != null;
                   addFeatureToGlyph(glyphIndex, hasUnicode, glyph?.unicode);
-                } catch { /* ignore */ }
+                } catch {
+                  /* ignore */
+                }
               }
             } else if (lookup.lookupType === 2 && subtable.sequences) {
               coverageGlyphs.forEach((glyphIndex, i) => {
@@ -137,53 +140,91 @@ export async function extractGlyphsFromFont(currentFont: FontForExtraction): Pro
                     for (const seqIdx of sequence) {
                       try {
                         const seqGlyph = opentypeFont.glyphs.get(seqIdx);
-                        addFeatureToGlyph(seqIdx, seqGlyph != null && seqGlyph.unicode != null, seqGlyph?.unicode);
-                      } catch { /* ignore */ }
+                        addFeatureToGlyph(
+                          seqIdx,
+                          seqGlyph != null && seqGlyph.unicode != null,
+                          seqGlyph?.unicode
+                        );
+                      } catch {
+                        /* ignore */
+                      }
                     }
                   }
-                } catch { /* ignore */ }
+                } catch {
+                  /* ignore */
+                }
               });
             } else if (lookup.lookupType === 3 && subtable.alternateSets) {
               coverageGlyphs.forEach((glyphIndex, i) => {
                 try {
                   const baseGlyph = opentypeFont.glyphs.get(glyphIndex);
-                  addFeatureToGlyph(glyphIndex, baseGlyph != null && baseGlyph.unicode != null, baseGlyph?.unicode);
+                  addFeatureToGlyph(
+                    glyphIndex,
+                    baseGlyph != null && baseGlyph.unicode != null,
+                    baseGlyph?.unicode
+                  );
                   const altSet = subtable.alternateSets?.[i];
                   if (Array.isArray(altSet)) {
                     for (const altIdx of altSet) {
                       try {
                         const altGlyph = opentypeFont.glyphs.get(altIdx);
-                        addFeatureToGlyph(altIdx, altGlyph != null && altGlyph.unicode != null, altGlyph?.unicode);
-                      } catch { /* ignore */ }
+                        addFeatureToGlyph(
+                          altIdx,
+                          altGlyph != null && altGlyph.unicode != null,
+                          altGlyph?.unicode
+                        );
+                      } catch {
+                        /* ignore */
+                      }
                     }
                   }
-                } catch { /* ignore */ }
+                } catch {
+                  /* ignore */
+                }
               });
             } else if (lookup.lookupType === 4 && subtable.ligatureSets) {
               coverageGlyphs.forEach((firstGlyphIndex, i) => {
                 try {
                   const firstGlyph = opentypeFont.glyphs.get(firstGlyphIndex);
-                  addFeatureToGlyph(firstGlyphIndex, firstGlyph != null && firstGlyph.unicode != null, firstGlyph?.unicode);
+                  addFeatureToGlyph(
+                    firstGlyphIndex,
+                    firstGlyph != null && firstGlyph.unicode != null,
+                    firstGlyph?.unicode
+                  );
                   const ligSet = subtable.ligatureSets?.[i];
                   if (Array.isArray(ligSet)) {
                     for (const lig of ligSet) {
                       if (lig.ligGlyph !== undefined) {
                         try {
                           const ligGlyph = opentypeFont.glyphs.get(lig.ligGlyph);
-                          addFeatureToGlyph(lig.ligGlyph, ligGlyph != null && ligGlyph.unicode != null, ligGlyph?.unicode);
-                        } catch { /* ignore */ }
+                          addFeatureToGlyph(
+                            lig.ligGlyph,
+                            ligGlyph != null && ligGlyph.unicode != null,
+                            ligGlyph?.unicode
+                          );
+                        } catch {
+                          /* ignore */
+                        }
                       }
                       if (Array.isArray(lig.components)) {
                         for (const compIdx of lig.components) {
                           try {
                             const compGlyph = opentypeFont.glyphs.get(compIdx);
-                            addFeatureToGlyph(compIdx, compGlyph != null && compGlyph.unicode != null, compGlyph?.unicode);
-                          } catch { /* ignore */ }
+                            addFeatureToGlyph(
+                              compIdx,
+                              compGlyph != null && compGlyph.unicode != null,
+                              compGlyph?.unicode
+                            );
+                          } catch {
+                            /* ignore */
+                          }
                         }
                       }
                     }
                   }
-                } catch { /* ignore */ }
+                } catch {
+                  /* ignore */
+                }
               });
             }
           }
@@ -214,12 +255,15 @@ export async function extractGlyphsFromFont(currentFont: FontForExtraction): Pro
           features: Array.from(new Set([...unicodeFeatures, ...indexFeatures])),
           glyphIndex: i,
         });
-      } catch { /* ignore malformed glyphs */ }
+      } catch {
+        /* ignore malformed glyphs */
+      }
     }
   }
 
   extractedGlyphs.sort((a, b) => {
-    if (a.unicodeNumber != null && b.unicodeNumber != null) return a.unicodeNumber - b.unicodeNumber;
+    if (a.unicodeNumber != null && b.unicodeNumber != null)
+      return a.unicodeNumber - b.unicodeNumber;
     return a.unicodeNumber == null ? 1 : -1;
   });
 

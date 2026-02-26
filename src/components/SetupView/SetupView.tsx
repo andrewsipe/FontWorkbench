@@ -202,16 +202,6 @@ function SetupView() {
           >
             {processedName !== "—" ? processedName : "Drop folder here or click to choose"}
           </div>
-          <div className={styles.actions}>
-            <button
-              type="button"
-              className={styles.btn}
-              onClick={handleBuildIndex}
-              disabled={!processedDirHandle || indexing}
-            >
-              {indexLoaded ? "Rebuild index" : "Build index"}
-            </button>
-          </div>
         </section>
 
         <section className={styles.section} aria-labelledby="unprocessed-heading">

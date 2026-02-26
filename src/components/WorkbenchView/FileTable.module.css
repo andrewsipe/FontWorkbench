@@ -178,6 +178,7 @@
 /* Selection = blue tint (prototype .font-row.selected); duplicate = amber (prototype .font-row.duplicate) */
 .rowSelected td {
   background: var(--wb-selection-bg);
+  border-bottom-color: var(--wb-selection-border);
 }
 
 .rowDuplicate td,
@@ -209,9 +210,6 @@ tr[data-duplicate="true"] td {
 /* Filename cell — always editable (prototype .fname-input + .fname-ext) */
 .cellName {
   min-width: 200px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
   padding-right: 10px;
 }
 
@@ -242,7 +240,8 @@ tr[data-duplicate="true"] td {
   color: var(--wb-txt3);
 }
 
-.fnameStem:focus {
+.fnameStem:focus,
+.fnameStem:focus-visible {
   background: var(--wb-bg4);
   border-color: var(--wb-border2);
   outline: none;

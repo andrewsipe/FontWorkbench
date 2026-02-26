@@ -2,6 +2,9 @@
  * Design tokens for Font Workbench.
  * OKLCH where useful; fallbacks for layout and typography.
  */
+
+@import url("https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap");
+
 :root {
   --accent-hue: 250;
   --color-accent: oklch(65% 0.2 var(--accent-hue));
@@ -19,8 +22,8 @@
   --space-md: 1rem;
   --space-lg: 1.5rem;
   --space-xl: 2rem;
-  --font-sans: system-ui, -apple-system, sans-serif;
-  --font-mono: ui-monospace, "Cascadia Code", monospace;
+  --font-sans: Geist, system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
   --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.06);
   --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.08);
 }

@@ -26,9 +26,10 @@
   --wb-violet-bg: #1e1030;
 
   /* Row states: selection (blue) vs duplicate/conflict (amber) */
-  --wb-selection-bg: #182030;
-  --wb-dup-bg: #1c1a12;
-  --wb-dup-border: #3d3210;
+  --wb-selection-bg: #142461;
+  --wb-selection-border: #345cfa;
+  --wb-dup-bg: #191401;
+  --wb-dup-border: #fad234;
 
   --wb-titlebar-h: 44px;
   --wb-statusbar-h: 28px;

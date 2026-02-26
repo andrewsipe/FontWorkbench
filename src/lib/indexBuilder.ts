@@ -113,9 +113,7 @@ async function getDB(): Promise<IDBPDatabase<FontWorkbenchDBSchema>> {
 }
 
 /** Persist processed directory handle for restore on next load (Chrome serialises permission reference). */
-export async function saveProcessedHandle(
-  handle: FileSystemDirectoryHandle
-): Promise<void> {
+export async function saveProcessedHandle(handle: FileSystemDirectoryHandle): Promise<void> {
   const db = await getDB();
   await db.put("app-config", { id: "processed-handle", handle });
   db.close();
