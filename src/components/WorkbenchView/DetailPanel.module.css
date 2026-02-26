@@ -302,15 +302,26 @@
 .glyphGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 3px;
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--wb-txt2);
+  gap: 2px;
+  padding-bottom: 8px;
 }
 
 .glyphCell {
-  width: 1.5em;
-  text-align: center;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--wb-txt);
+  border-radius: 3px;
+  cursor: default;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.glyphCell:hover {
+  background: var(--wb-bg4);
 }
 
 /* Glyphs tab */

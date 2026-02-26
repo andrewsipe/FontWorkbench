@@ -24,6 +24,8 @@ export interface IndexRecord {
   availableTables: string[];
   featureTags: string[];
   format: "otf" | "ttf" | "woff" | "woff2";
+  /** File size in bytes. Optional for backwards compat with existing indexes. */
+  fileSize?: number;
 }
 
 export interface Progress {
@@ -77,6 +79,7 @@ function cachedFontToIndexRecord(
   const availableTables = cached.misc?.availableTables ?? [];
   const featureTags = cached.features ?? [];
   const fontRevision = cached.fileData ? getFontRevisionFromBuffer(cached.fileData) : 0;
+  const fileSize = cached.fileData?.byteLength ?? 0;
 
   return {
     filePath,
@@ -91,6 +94,7 @@ function cachedFontToIndexRecord(
     availableTables,
     featureTags,
     format: cached.format,
+    fileSize,
   };
 }
 

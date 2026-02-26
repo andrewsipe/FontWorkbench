@@ -426,9 +426,6 @@ tr[data-duplicate="true"] td {
   background: var(--wb-bg);
   border-bottom: 1px solid var(--wb-border);
   border-top: 1px solid var(--wb-border2);
-}
-
-.sectionHeaderRow td {
   padding: 6px 14px 4px;
   height: auto;
   vertical-align: middle;
