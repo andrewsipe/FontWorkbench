@@ -55,6 +55,8 @@ export interface CachedFont {
   misc?: MiscellaneousData; // Miscellaneous data from MiscExtractor
   /** Glyph count (quick-load display or from misc) */
   glyphCount?: number;
+  /** File size in bytes — set during quick scan when fileData is not stored */
+  fileSize?: number;
 
   /** True when font was shown via two-phase quick load; full metadata still loading */
   _quickLoad?: boolean;

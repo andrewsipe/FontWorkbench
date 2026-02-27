@@ -165,22 +165,22 @@ function SetupView() {
           <h2 id="processed-heading" className={styles.sectionTitle}>
             Processed collection
           </h2>
-          {processedIndexStatus ? (
-            <p className={styles.indexStatus}>
-              {processedIndexStatus}
-              {" · "}
-              <button
-                type="button"
-                className={styles.linkButton}
-                onClick={handleBuildIndex}
-                disabled={!processedDirHandle || indexing}
-              >
-                Rebuild index
-              </button>
-            </p>
-          ) : (
-            <p className={styles.indexStatus}>No index built yet. Pick a directory to scan.</p>
-          )}
+          <p className={styles.indexStatus}>
+            {processedIndexStatus ?? "No index built yet. Pick a directory to scan."}
+            {processedIndexStatus && (
+              <>
+                {" · "}
+                <button
+                  type="button"
+                  className={styles.linkButton}
+                  onClick={handleBuildIndex}
+                  disabled={!processedDirHandle || indexing}
+                >
+                  Rebuild index
+                </button>
+              </>
+            )}
+          </p>
           <div
             role="button"
             tabIndex={0}
@@ -202,6 +202,18 @@ function SetupView() {
           >
             {processedName !== "—" ? processedName : "Drop folder here or click to choose"}
           </div>
+          {processedDirHandle && (
+            <div className={styles.actions}>
+              <button
+                type="button"
+                className={styles.btn}
+                onClick={handleBuildIndex}
+                disabled={indexing}
+              >
+                {indexLoaded && processedIndex.length > 0 ? "Rebuild index" : "Build index"}
+              </button>
+            </div>
+          )}
         </section>
 
         <section className={styles.section} aria-labelledby="unprocessed-heading">

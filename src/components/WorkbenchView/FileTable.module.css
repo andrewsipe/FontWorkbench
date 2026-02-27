@@ -260,6 +260,16 @@ tr[data-duplicate="true"] td {
   flex-shrink: 0;
 }
 
+.loadingPip {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--wb-txt3);
+  opacity: 0.35;
+  flex-shrink: 0;
+  align-self: center;
+}
+
 /* Data cells — prototype .cell-ver, .cv, .cv.pos */
 .cellVer,
 .cellDate {

@@ -4,7 +4,11 @@
  */
 
 import { create } from "zustand";
-import { collectFontHandlesWithParents, parseFontHandle } from "../lib/directoryScanner";
+import {
+  collectFontHandlesWithParents,
+  parseFontHandle,
+  quickScanFontHandle,
+} from "../lib/directoryScanner";
 import type { IndexRecord, Progress } from "../lib/indexBuilder";
 import {
   getAppConfig,
@@ -21,6 +25,7 @@ export interface UnprocessedItem {
   font: CachedFont;
   filePath: string;
   parentDirHandle: FileSystemDirectoryHandle;
+  handle?: FileSystemFileHandle;
 }
 
 export interface RenameQueueItem {
@@ -206,23 +211,31 @@ export const useWorkbenchStore = create<WorkbenchStore>((set, get) => ({
     const total = items.length;
     const unprocessedItems: UnprocessedItem[] = [];
     const matchResults = new Map<string, MatchResult>();
+    const BATCH = 50;
 
     for (let i = 0; i < items.length; i++) {
       const { handle, filePath, parentDirHandle } = items[i];
       onProgress?.({ scanned: i, total, currentFile: handle.name });
-      set({ scanProgress: { scanned: i, total, currentFile: handle.name } });
-      const font = await parseFontHandle(handle);
+
+      const font = await quickScanFontHandle(handle);
       if (font) {
-        unprocessedItems.push({ font, filePath, parentDirHandle });
+        unprocessedItems.push({ font, filePath, parentDirHandle, handle });
         matchResults.set(filePath, matchFont(font, processedIndex));
       }
+
+      if ((i + 1) % BATCH === 0 || i === items.length - 1) {
+        set({
+          unprocessedItems: [...unprocessedItems],
+          matchResults: new Map(matchResults),
+          familyGroups: groupItemsByFamily(unprocessedItems),
+          scanProgress: { scanned: i + 1, total, currentFile: handle.name },
+        });
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+      }
     }
+
     onProgress?.({ scanned: total, total, currentFile: "" });
-    const familyGroups = groupItemsByFamily(unprocessedItems);
     set({
-      unprocessedItems,
-      matchResults,
-      familyGroups,
       scanProgress: null,
       selectedFamily: null,
       selectedFontFilePath: null,
@@ -238,6 +251,28 @@ export const useWorkbenchStore = create<WorkbenchStore>((set, get) => ({
 
   selectFont: (filePath) => {
     set({ selectedFontFilePath: filePath });
+    if (!filePath) return;
+    const item = get().unprocessedItems.find((i) => i.filePath === filePath);
+    if (!item?.font._quickLoad || !item.handle) return;
+    void parseFontHandle(item.handle).then((fullFont) => {
+      if (!fullFont) return;
+      const { processedIndex } = get();
+      set((s) => {
+        const current = s.unprocessedItems.find((i) => i.filePath === filePath);
+        if (!current?.font._quickLoad) return {};
+        const nextItems = s.unprocessedItems.map((i) =>
+          i.filePath === filePath ? { ...i, font: fullFont } : i
+        );
+        return {
+          unprocessedItems: nextItems,
+          familyGroups: groupItemsByFamily(nextItems),
+          matchResults: new Map([
+            ...s.matchResults,
+            [filePath, matchFont(fullFont, processedIndex)],
+          ]),
+        };
+      });
+    });
   },
 
   clearSelection: () => {

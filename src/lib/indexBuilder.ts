@@ -6,7 +6,7 @@
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 import { findTableOffset } from "../engine/parsers/RawTableParser";
 import type { CachedFont } from "../types/font.types";
-import { collectFontHandlesWithParents, parseFontHandle } from "./directoryScanner";
+import { collectFontHandlesWithParents, quickScanFontHandle } from "./directoryScanner";
 
 export interface IndexRecord {
   filePath: string;
@@ -78,8 +78,9 @@ function cachedFontToIndexRecord(
   const glyphCount = cached.glyphCount ?? cached.misc?.glyphCount ?? 0;
   const availableTables = cached.misc?.availableTables ?? [];
   const featureTags = cached.features ?? [];
-  const fontRevision = cached.fileData ? getFontRevisionFromBuffer(cached.fileData) : 0;
-  const fileSize = cached.fileData?.byteLength ?? 0;
+  const fontRevision =
+    cached.fileData?.byteLength ? getFontRevisionFromBuffer(cached.fileData) : 0;
+  const fileSize = cached.fileSize ?? cached.fileData?.byteLength ?? 0;
 
   return {
     filePath,
@@ -145,9 +146,12 @@ export async function buildIndex(
     const { handle, filePath } = items[i];
     const fileName = handle.name;
     onProgress({ scanned: i, total, currentFile: fileName });
-    const cached = await parseFontHandle(handle);
+    const cached = await quickScanFontHandle(handle);
     if (cached) {
       records.push(cachedFontToIndexRecord(cached, filePath, fileName));
+    }
+    if ((i + 1) % 50 === 0) {
+      await new Promise<void>((resolve) => setTimeout(resolve, 0));
     }
   }
   onProgress({ scanned: total, total, currentFile: "" });

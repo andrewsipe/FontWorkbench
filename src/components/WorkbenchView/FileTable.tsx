@@ -28,7 +28,7 @@ function sortKey(item: UnprocessedItem, col: SortColumnId): string | number {
     case "feat":
       return (item.font.features ?? []).length;
     case "size":
-      return item.font.fileData?.byteLength ?? 0;
+      return item.font.fileSize ?? item.font.fileData?.byteLength ?? 0;
     case "type":
       return item.font.format ?? "";
     default:
@@ -355,7 +355,8 @@ function FileTable() {
                 const version = font.metadata?.version ?? "—";
                 const glyphCount = font.glyphCount ?? font.misc?.glyphCount ?? 0;
                 const featCount = (font.features ?? []).length;
-                const sizeStr = font.fileData ? formatBytes(font.fileData.byteLength) : "—";
+                const sizeBytes = font.fileSize ?? (font.fileData?.byteLength ?? 0);
+                const sizeStr = sizeBytes > 0 ? formatBytes(sizeBytes) : "—";
                 const typeBadgeKey = TYPE_BADGE_CLASS[font.format] ?? "typeOtf";
                 const typeLabel =
                   font.format === "woff2"
@@ -419,6 +420,9 @@ function FileTable() {
                           aria-label={`Filename for ${fileName}`}
                         />
                         {ext ? <span className={styles.fnameExt}>{ext}</span> : null}
+                        {font._quickLoad && (
+                          <span className={styles.loadingPip} aria-hidden title="Loading details…" />
+                        )}
                         <span className={styles.cellNameActions}>
                           {inRemoval ? (
                             <button
