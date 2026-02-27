@@ -2,21 +2,23 @@
  * Toolbar above the file table: family name, counts, status line, Select Duplicates / Queue Removal.
  */
 
-import type { FamilyStatus } from "./FamilySidebar";
+import type { SuggestedAction } from "../../lib/matcher";
 import styles from "./TableToolbar.module.css";
 
-const STATUS_CONFIG: Record<FamilyStatus, { label: string; className: string }> = {
-  conflict: { label: "⊛ Name conflicts detected", className: styles.statusConflict },
-  "needs-review": { label: "⚠ Review recommended", className: styles.statusReview },
-  new: { label: "✦ Not in processed collection", className: styles.statusNew },
-  clean: { label: "✓ Safe to skip", className: styles.statusClean },
+const STATUS_CONFIG: Record<SuggestedAction, { label: string; className: string }> = {
+  CONFLICT: { label: "⊛ Name conflicts detected", className: styles.statusConflict },
+  PROBLEM:  { label: "✕ Problem detected", className: styles.statusProblem },
+  REVIEW:   { label: "⚠ Review recommended", className: styles.statusReview },
+  UPGRADE:  { label: "↑ Upgrade available", className: styles.statusUpgrade },
+  NEW:      { label: "✦ Not in processed collection", className: styles.statusNew },
+  SKIP:     { label: "✓ Safe to skip", className: styles.statusSkip },
 };
 
 export interface TableToolbarProps {
   familyName: string | null;
   unprocessedCount: number;
   processedCount: number;
-  status: FamilyStatus;
+  status: SuggestedAction;
   onSelectDuplicates: () => void;
   onQueueRemoval: () => void;
   hasSelection: boolean;

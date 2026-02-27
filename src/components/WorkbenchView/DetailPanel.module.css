@@ -1,7 +1,7 @@
 /* Bottom detail panel — prototype .detail-panel, collapsible, tabs Compare / Features / Glyphs */
 
 .panel {
-  height: 280px;
+  height: 330px;
   background: var(--wb-bg2);
   border-top: 2px solid var(--wb-border2);
   display: flex;
@@ -193,6 +193,10 @@
   color: var(--wb-amber);
 }
 
+.cgValNeg {
+  color: var(--wb-red, #ff5e5e);
+}
+
 .cmpTablesSection {
   margin-top: 4px;
 }
@@ -285,6 +289,24 @@
   background: var(--wb-blue-bg);
   border-color: #1a3a60;
   color: var(--wb-blue);
+}
+
+.chipShared {
+  background: var(--wb-green-bg);
+  border-color: #1a4030;
+  color: var(--wb-green);
+}
+
+.chipOnlyUnprocessed {
+  background: var(--wb-blue-bg);
+  border-color: #1a3a60;
+  color: var(--wb-blue);
+}
+
+.chipOnlyProcessed {
+  background: var(--wb-amber-bg);
+  border-color: #3a2808;
+  color: var(--wb-amber);
 }
 
 .featNote {

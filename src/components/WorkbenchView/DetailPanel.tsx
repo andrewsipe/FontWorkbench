@@ -38,6 +38,21 @@ async function getFileByPath(
   return f.getFile();
 }
 
+type Delta = "better" | "worse" | "equal";
+
+function getDelta(a: number, b: number): Delta {
+  if (a > b) return "better";
+  if (a < b) return "worse";
+  return "equal";
+}
+
+function parseVersion(v: string): number {
+  const m = v.match(/[\d.]+/);
+  if (!m) return 0;
+  const n = parseFloat(m[0]);
+  return Number.isNaN(n) ? 0 : n;
+}
+
 type DetailTab = "compare" | "features" | "glyphs";
 
 function useInjectedFont(font: CachedFont | null): string | null {
@@ -253,7 +268,14 @@ function DetailPanel() {
                     </div>
                     <div className={styles.cmpFilename}>{matchedRecord?.fileName ?? "—"}</div>
                     {matchedRecord ? (
-                      <MatchedSummary record={matchedRecord} />
+                      <MatchedSummary
+                        record={matchedRecord}
+                        unprocessedGlyphCount={
+                          selected.font.glyphCount ?? selected.font.misc?.glyphCount ?? 0
+                        }
+                        unprocessedFeatCount={(selected.font.features ?? []).length}
+                        unprocessedVersion={selected.font.metadata?.version ?? ""}
+                      />
                     ) : (
                       <p className={styles.muted}>No match in processed collection.</p>
                     )}
@@ -370,12 +392,12 @@ function FeatureComparison({
         </div>
         <div className={styles.featGrid}>
           {shared.map((tag) => (
-            <span key={tag} className={`${styles.featTag} ${styles.featTagShared}`}>
+            <span key={tag} className={`${styles.featTag} ${styles.chipShared}`}>
               {tag}
             </span>
           ))}
           {onlyUnprocessed.map((tag) => (
-            <span key={tag} className={`${styles.featTag} ${styles.featTagOnly}`}>
+            <span key={tag} className={`${styles.featTag} ${styles.chipOnlyUnprocessed}`}>
               {tag}
             </span>
           ))}
@@ -396,12 +418,12 @@ function FeatureComparison({
         </div>
         <div className={styles.featGrid}>
           {shared.map((tag) => (
-            <span key={tag} className={`${styles.featTag} ${styles.featTagShared}`}>
+            <span key={tag} className={`${styles.featTag} ${styles.chipShared}`}>
               {tag}
             </span>
           ))}
           {onlyProcessed.map((tag) => (
-            <span key={tag} className={styles.featTag}>
+            <span key={tag} className={`${styles.featTag} ${styles.chipOnlyProcessed}`}>
               {tag}
             </span>
           ))}
@@ -410,6 +432,10 @@ function FeatureComparison({
       </div>
     </div>
   );
+}
+
+function deltaClass(d: Delta, better: string, worse: string, equal: string): string {
+  return d === "better" ? better : d === "worse" ? worse : equal;
 }
 
 function CompareGrid({
@@ -424,27 +450,42 @@ function CompareGrid({
   const glyphCount = font.glyphCount ?? font.misc?.glyphCount ?? 0;
   const featureCount = (font.features ?? []).length;
   const tables = font.misc?.availableTables ?? [];
-  const versionDiff = matchedRecord && version !== matchedRecord.version;
-  const glyphDiff = matchedRecord && glyphCount !== matchedRecord.glyphCount;
-  const sizeStr = font.fileData ? `${(font.fileData.byteLength / 1024).toFixed(0)} KB` : "—";
+  const sizeBytes = font.fileSize ?? font.fileData?.byteLength ?? 0;
+  const sizeStr = sizeBytes > 0 ? `${(sizeBytes / 1024).toFixed(0)} KB` : "—";
   const formatStr =
     font.format === "otf" ? "OTF (CFF)" : font.format === "ttf" ? "TTF" : font.format.toUpperCase();
+
+  const glyphDelta = matchedRecord ? getDelta(glyphCount, matchedRecord.glyphCount ?? 0) : "equal";
+  const featDelta = matchedRecord
+    ? getDelta(featureCount, (matchedRecord.featureTags ?? []).length)
+    : "equal";
+  const versionDelta = matchedRecord
+    ? getDelta(parseVersion(version), parseVersion(matchedRecord.version ?? ""))
+    : "equal";
 
   return (
     <>
       <div className={styles.cmpGrid}>
         <span className={styles.cgKey}>Version</span>
-        <span className={versionDiff ? `${styles.cgVal} ${styles.cgValWarn}` : styles.cgVal}>
+        <span
+          className={`${styles.cgVal} ${deltaClass(versionDelta, styles.cgValHighlight, styles.cgValNeg, "")}`}
+        >
           {version}
         </span>
         <span className={styles.cgKey}>Family</span>
         <span className={styles.cgVal}>{family}</span>
         <span className={styles.cgKey}>Glyphs</span>
-        <span className={glyphDiff ? `${styles.cgVal} ${styles.cgValHighlight}` : styles.cgVal}>
+        <span
+          className={`${styles.cgVal} ${deltaClass(glyphDelta, styles.cgValHighlight, styles.cgValNeg, "")}`}
+        >
           {glyphCount}
         </span>
         <span className={styles.cgKey}>Features</span>
-        <span className={styles.cgVal}>{featureCount}</span>
+        <span
+          className={`${styles.cgVal} ${deltaClass(featDelta, styles.cgValHighlight, styles.cgValNeg, "")}`}
+        >
+          {featureCount}
+        </span>
         <span className={styles.cgKey}>File size</span>
         <span className={styles.cgVal}>{sizeStr}</span>
         <span className={styles.cgKey}>Format</span>
@@ -474,22 +515,49 @@ function formatBytes(n: number): string {
   return `${(n / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function MatchedSummary({ record }: { record: IndexRecord }) {
+function MatchedSummary({
+  record,
+  unprocessedGlyphCount,
+  unprocessedFeatCount,
+  unprocessedVersion,
+}: {
+  record: IndexRecord;
+  unprocessedGlyphCount: number;
+  unprocessedFeatCount: number;
+  unprocessedVersion: string;
+}) {
   const glyphCount = record.glyphCount ?? 0;
+  const featCount = (record.featureTags ?? []).length;
   const tables = record.availableTables ?? [];
   const sizeStr = record.fileSize ? formatBytes(record.fileSize) : "—";
+
+  const glyphDelta = getDelta(unprocessedGlyphCount, glyphCount);
+  const featDelta = getDelta(unprocessedFeatCount, featCount);
+  const versionDelta = getDelta(parseVersion(unprocessedVersion), parseVersion(record.version ?? ""));
 
   return (
     <>
       <div className={styles.cmpGrid}>
         <span className={styles.cgKey}>Version</span>
-        <span className={styles.cgVal}>{record.version ?? "—"}</span>
+        <span
+          className={`${styles.cgVal} ${deltaClass(versionDelta, styles.cgValNeg, styles.cgValHighlight, "")}`}
+        >
+          {record.version ?? "—"}
+        </span>
         <span className={styles.cgKey}>Family</span>
         <span className={styles.cgVal}>{record.familyName ?? "—"}</span>
         <span className={styles.cgKey}>Glyphs</span>
-        <span className={styles.cgVal}>{glyphCount}</span>
+        <span
+          className={`${styles.cgVal} ${deltaClass(glyphDelta, styles.cgValNeg, styles.cgValHighlight, "")}`}
+        >
+          {glyphCount}
+        </span>
         <span className={styles.cgKey}>Features</span>
-        <span className={styles.cgVal}>{(record.featureTags ?? []).length || "—"}</span>
+        <span
+          className={`${styles.cgVal} ${deltaClass(featDelta, styles.cgValNeg, styles.cgValHighlight, "")}`}
+        >
+          {featCount || "—"}
+        </span>
         <span className={styles.cgKey}>File size</span>
         <span className={styles.cgVal}>{sizeStr}</span>
         <span className={styles.cgKey}>Format</span>

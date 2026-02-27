@@ -84,17 +84,25 @@
 }
 
 .statusConflict {
-  color: var(--wb-violet);
+  color: var(--wb-amber, #f5a623);
+}
+
+.statusProblem {
+  color: var(--wb-red, #ff5e5e);
 }
 
 .statusReview {
-  color: var(--wb-amber);
+  color: var(--wb-blue, #4a9eff);
+}
+
+.statusUpgrade {
+  color: var(--wb-green, #2dd4a0);
 }
 
 .statusNew {
-  color: var(--wb-blue);
+  color: var(--wb-violet, #a78bfa);
 }
 
-.statusClean {
-  color: var(--wb-green);
+.statusSkip {
+  color: var(--wb-txt3);
 }

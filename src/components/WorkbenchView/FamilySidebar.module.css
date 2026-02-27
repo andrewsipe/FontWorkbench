@@ -23,6 +23,38 @@
   margin-bottom: 8px;
 }
 
+.toolRow {
+  display: flex;
+  gap: 5px;
+  padding: 0 0 6px;
+}
+
+.sortSelect {
+  flex: 1;
+  min-width: 0;
+  font-family: "Geist Mono", var(--font-mono);
+  font-size: 10px;
+  background: var(--wb-bg3);
+  border: 1px solid var(--wb-border);
+  border-radius: var(--radius-sm);
+  color: var(--wb-txt2);
+  padding: 3px 6px;
+  cursor: pointer;
+}
+
+.dotConflict { background: var(--wb-amber, #f5a623); }
+.dotProblem  { background: var(--wb-red,   #ff5e5e); }
+.dotReview   { background: var(--wb-blue,  #4a9eff); }
+.dotUpgrade  { background: var(--wb-green, #2dd4a0); }
+.dotNew      { background: var(--wb-violet, #a78bfa); }
+.dotSkip     { background: var(--wb-border2, #2e3033); }
+
+.familyItemDim .fiName,
+.familyItemDim .fiFlag,
+.familyItemDim .fiCount {
+  opacity: 0.45;
+}
+
 .sidebarSearch {
   background: var(--wb-bg);
   border: 1px solid var(--wb-border2);
