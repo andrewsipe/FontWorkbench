@@ -3,7 +3,8 @@
  * Prototype-aligned: tabs in header, collapse button, left/right compare layout.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { loadFontFile } from "../../engine/FontLoader";
 import { extractGlyphsFromFont, type GlyphInfo } from "../../lib/glyphExtraction";
 import type { IndexRecord } from "../../lib/indexBuilder";
@@ -51,6 +52,13 @@ function parseVersion(v: string): number {
   if (!m) return 0;
   const n = parseFloat(m[0]);
   return Number.isNaN(n) ? 0 : n;
+}
+
+type GlyphPresence = "shared" | "only-here";
+
+function getGlyphPresence(codepoint: number | null, otherSet: Set<number>): GlyphPresence {
+  if (codepoint === null || otherSet.has(codepoint)) return "shared";
+  return "only-here";
 }
 
 type DetailTab = "compare" | "features" | "glyphs";
@@ -201,7 +209,39 @@ function DetailPanel() {
   const isLoadingProcessedFont =
     activeTab === "glyphs" && !!matchedRecord && !processedFont && !processedFontError;
 
+  const [popover, setPopover] = useState<{
+    codepoint: number;
+    char: string;
+    name?: string;
+    unprocessedFontFamily: string;
+    processedFontFamily: string | null;
+  } | null>(null);
+
+  const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const cancelDismiss = () => {
+    if (dismissTimer.current !== null) {
+      clearTimeout(dismissTimer.current);
+      dismissTimer.current = null;
+    }
+  };
+
+  const scheduleDismiss = () => {
+    cancelDismiss();
+    dismissTimer.current = setTimeout(() => setPopover(null), 200);
+  };
+
+  useEffect(() => () => { if (dismissTimer.current !== null) clearTimeout(dismissTimer.current); }, []);
+
+  const unprocessedCodepoints = new Set(
+    unprocessedGlyphs.map((g) => g.unicodeNumber).filter((n): n is number => n !== null)
+  );
+  const processedCodepoints = new Set(
+    processedGlyphs.map((g) => g.unicodeNumber).filter((n): n is number => n !== null)
+  );
+
   return (
+    <>
     <section
       className={`${styles.panel} ${collapsed ? styles.collapsed : ""}`}
       aria-label="Font comparison and details"
@@ -305,18 +345,39 @@ function DetailPanel() {
                     {unprocessedGlyphsLoading ? (
                       <p className={styles.muted}>Extracting glyphs…</p>
                     ) : injectedFontFamily && unprocessedGlyphs.length > 0 ? (
-                      <div className={styles.glyphGrid}>
-                        {unprocessedGlyphs.map((glyph) => (
-                          <div
-                            key={glyph.unicode}
-                            className={styles.glyphCell}
-                            style={{ fontFamily: `"${injectedFontFamily}"` }}
-                            title={`${glyph.char}  ${glyph.unicode} — ${glyph.name}`}
-                          >
-                            {glyph.char}
-                          </div>
-                        ))}
-                      </div>
+                      <>
+                        <div className={styles.glyphGrid}>
+                          {unprocessedGlyphs.map((glyph) => {
+                            const presence = getGlyphPresence(glyph.unicodeNumber, processedCodepoints);
+                            return (
+                              <div
+                                key={glyph.unicode}
+                                className={`${styles.glyphCell} ${presence === "only-here" ? styles.glyphCellOnlyUnprocessed : ""}`}
+                                style={{ fontFamily: `"${injectedFontFamily}"` }}
+                                title={`${glyph.char}  ${glyph.unicode} — ${glyph.name}`}
+                                onMouseEnter={() => {
+                                  cancelDismiss();
+                                  if (glyph.unicodeNumber === null) return;
+                                  setPopover({
+                                    codepoint: glyph.unicodeNumber,
+                                    char: glyph.char,
+                                    name: glyph.name,
+                                    unprocessedFontFamily: injectedFontFamily,
+                                    processedFontFamily: injectedProcessedFontFamily,
+                                  });
+                                }}
+                                onMouseLeave={scheduleDismiss}
+                              >
+                                {glyph.char}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <p className={styles.glyphLegend}>
+                          <span className={styles.legendDotBlue} /> Only here &nbsp;
+                          <span className={styles.legendDotAmber} /> Not in this version
+                        </p>
+                      </>
                     ) : !injectedFontFamily ? (
                       <p className={styles.muted}>Loading font…</p>
                     ) : null}
@@ -340,18 +401,39 @@ function DetailPanel() {
                     )}
                     {processedGlyphsLoading && <p className={styles.muted}>Extracting glyphs…</p>}
                     {processedGlyphs.length > 0 && injectedProcessedFontFamily && (
-                      <div className={styles.glyphGrid}>
-                        {processedGlyphs.map((glyph) => (
-                          <div
-                            key={glyph.unicode}
-                            className={styles.glyphCell}
-                            style={{ fontFamily: `"${injectedProcessedFontFamily}"` }}
-                            title={`${glyph.char}  ${glyph.unicode} — ${glyph.name}`}
-                          >
-                            {glyph.char}
-                          </div>
-                        ))}
-                      </div>
+                      <>
+                        <div className={styles.glyphGrid}>
+                          {processedGlyphs.map((glyph) => {
+                            const presence = getGlyphPresence(glyph.unicodeNumber, unprocessedCodepoints);
+                            return (
+                              <div
+                                key={glyph.unicode}
+                                className={`${styles.glyphCell} ${presence === "only-here" ? styles.glyphCellOnlyProcessed : ""}`}
+                                style={{ fontFamily: `"${injectedProcessedFontFamily}"` }}
+                                title={`${glyph.char}  ${glyph.unicode} — ${glyph.name}`}
+                                onMouseEnter={() => {
+                                  cancelDismiss();
+                                  if (glyph.unicodeNumber === null) return;
+                                  setPopover({
+                                    codepoint: glyph.unicodeNumber,
+                                    char: glyph.char,
+                                    name: glyph.name,
+                                    unprocessedFontFamily: injectedFontFamily ?? injectedProcessedFontFamily,
+                                    processedFontFamily: injectedProcessedFontFamily,
+                                  });
+                                }}
+                                onMouseLeave={scheduleDismiss}
+                              >
+                                {glyph.char}
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <p className={styles.glyphLegend}>
+                          <span className={styles.legendDotBlue} /> Only here &nbsp;
+                          <span className={styles.legendDotAmber} /> Not in this version
+                        </p>
+                      </>
                     )}
                     {!matchedRecord && !processedFontError && (
                       <p className={styles.muted}>No match in processed collection.</p>
@@ -364,6 +446,42 @@ function DetailPanel() {
         </div>
       )}
     </section>
+    {popover && createPortal(
+      <div className={styles.glyphPopover}>
+        <div className={styles.popoverGlyphs}>
+          <div className={styles.popoverSide}>
+            <span
+              className={styles.popoverGlyph}
+              style={{ fontFamily: `"${popover.unprocessedFontFamily}"` }}
+            >
+              {popover.char}
+            </span>
+            <span className={styles.popoverSideLabel}>Unprocessed</span>
+          </div>
+          {popover.processedFontFamily && (
+            <div className={styles.popoverSide}>
+              <span
+                className={styles.popoverGlyph}
+                style={{ fontFamily: `"${popover.processedFontFamily}"` }}
+              >
+                {popover.char}
+              </span>
+              <span className={styles.popoverSideLabel}>Processed</span>
+            </div>
+          )}
+        </div>
+        <div className={styles.popoverMeta}>
+          <span className={styles.popoverCodepoint}>
+            U+{popover.codepoint.toString(16).toUpperCase().padStart(4, "0")}
+          </span>
+          {popover.name && (
+            <span className={styles.popoverName}>{popover.name}</span>
+          )}
+        </div>
+      </div>,
+      document.body
+    )}
+    </>
   );
 }
 
