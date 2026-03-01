@@ -1,8 +1,6 @@
 # Root directory
-https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/Organizing large font file collections for deduplication.md
 https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/README.md
 https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/biome.json
-https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/fontworkbench-prototype.html
 https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/index.html
 https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/package-lock.json
 https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/package.json
@@ -10,9 +8,6 @@ https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/tsconfig.app.jso
 https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/tsconfig.json
 https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/tsconfig.node.json
 https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/vite.config.ts
-
-# docs/
-https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/docs/PROTOTYPE-GAP-ANALYSIS.md
 
 # public/
 https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/public/vite.svg
