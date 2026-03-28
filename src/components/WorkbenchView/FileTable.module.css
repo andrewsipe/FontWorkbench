@@ -13,55 +13,45 @@
   min-height: 0;
 }
 
-/* Prototype: sticky "UNPROCESSED N files" section bar */
+/* Sticky section bar */
 .sectionHeader {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  background: var(--wb-bg);
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  background: var(--wb-bg2);
   border-bottom: 1px solid var(--wb-border);
   position: sticky;
   top: 0;
-  z-index: 4;
+  z-index: var(--z-sticky);
   min-width: 0;
 }
 
 .sectionLabel {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 9px;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--tracking-widest);
   color: var(--wb-txt3);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
-.sectionCount {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 9px;
-  color: var(--wb-txt3);
-  background: var(--wb-bg3);
-  padding: 1px 6px;
-  border-radius: 10px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
+.sectionCount,
 .sectionBadge {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 9px;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
   color: var(--wb-txt3);
   background: var(--wb-bg3);
-  padding: 1px 6px;
-  border-radius: 10px;
+  padding: 1px var(--space-1);
+  border-radius: var(--radius-full);
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 .sectionMatch {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 9px;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
   color: var(--wb-green);
   white-space: nowrap;
   flex-shrink: 0;
@@ -70,69 +60,46 @@
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.875rem;
+  font-size: var(--text-md);
 }
 
 .table th,
 .table td {
-  padding: 0 10px;
+  padding: 0 var(--space-2);
   text-align: left;
-  border-bottom: 1px solid #16181a;
+  border-bottom: 1px solid var(--wb-bg3);
   height: 34px;
   vertical-align: middle;
 }
 
 .table th {
-  font-weight: 600;
-  color: var(--color-text-muted);
+  font-weight: var(--font-weight-semibold);
+  color: var(--wb-txt2);
   background: var(--wb-bg);
   position: sticky;
-  top: 28px;
-  z-index: 2;
+  top: var(--layout-section-h);
+  z-index: var(--z-raised);
   height: 28px;
 }
 
-.colName {
-  min-width: 200px;
-}
-
-.colVer {
-  width: 110px;
-}
-
-.colDate {
-  width: 110px;
-}
-
-.colGlyphs {
-  width: 72px;
-  text-align: right;
-  padding-right: 18px;
-}
-
-.colFeat {
-  width: 60px;
-  text-align: right;
-  padding-right: 18px;
-}
-
-.colSize {
-  width: 72px;
-  text-align: right;
-  padding-right: 18px;
-}
-
-.colType {
-  width: 52px;
-}
+/* Column widths */
+.colName    { min-width: 200px; }
+.colVer     { max-width: 110px; }
+.colDate    { width: 110px; }
+.colGlyphs  { width: 72px;  text-align: right; padding-right: var(--space-4); }
+.colFeat    { width: 60px;  text-align: right; padding-right: var(--space-4); }
+.colSize    { width: 72px;  text-align: right; padding-right: var(--space-4); }
+.colType    { width: 52px; }
+.colCheck   { width: 2.5rem; text-align: center; }
 
 .colHeader {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 9px;
-  font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: var(--font-weight-medium);
   text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: var(--wb-txt3, var(--color-text-muted));
+  letter-spacing: var(--tracking-wide);
+  color: var(--wb-txt3);
+  background: var(--wb-bg2);
 }
 
 .colSortBtn {
@@ -146,21 +113,16 @@
   width: 100%;
   height: 100%;
   display: block;
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 9px;
-  font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: var(--font-weight-medium);
   text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: var(--wb-txt3, var(--color-text-muted));
+  letter-spacing: var(--tracking-wide);
+  color: var(--wb-txt3);
 }
 
 .colSortBtn:hover {
   color: var(--wb-txt);
-}
-
-.colCheck {
-  width: 2.5rem;
-  text-align: center;
 }
 
 .cellCheck {
@@ -171,10 +133,10 @@
 
 .cellCheck input {
   cursor: pointer;
-  accent-color: var(--wb-amber, var(--color-accent));
+  accent-color: var(--color-accent);
 }
 
-/* Selection = blue tint (prototype .font-row.selected); duplicate = amber (prototype .font-row.duplicate) */
+/* Row states */
 .rowSelected td {
   background: var(--wb-selection-bg);
   border-bottom-color: var(--wb-selection-border);
@@ -186,7 +148,6 @@ tr[data-duplicate="true"] td {
   border-bottom-color: var(--wb-dup-border);
 }
 
-/* When both selected and duplicate: keep amber (conflict) but show selection with blue left edge */
 .rowSelected.rowDuplicate td,
 .rowSelected[data-duplicate="true"] td {
   background: var(--wb-dup-bg);
@@ -195,7 +156,7 @@ tr[data-duplicate="true"] td {
 
 .rowSelected.rowDuplicate td:first-child,
 .rowSelected[data-duplicate="true"] td:first-child {
-  border-left: 3px solid var(--wb-selection-bg);
+  border-left: 1px solid var(--wb-selection-border);
 }
 
 .rowQueuedRemove td {
@@ -206,10 +167,10 @@ tr[data-duplicate="true"] td {
   text-decoration: line-through;
 }
 
-/* Filename cell — always editable (prototype .fname-input + .fname-ext) */
+/* Filename cell */
 .cellName {
   min-width: 200px;
-  padding-right: 10px;
+  padding-right: var(--space-2);
 }
 
 .fnameStem {
@@ -218,16 +179,15 @@ tr[data-duplicate="true"] td {
   background: transparent;
   border: 1px solid transparent;
   outline: none;
-  font-family: "Geist Mono", var(--font-mono);
-  font-weight: 600;
-  font-size: 12px;
-  color: var(--wb-mono, var(--color-text));
-  padding: 2px 4px;
-  border-radius: 3px;
-  transition:
-    background 0.1s,
-    color 0.1s,
-    border-color 0.1s;
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-sm);
+  color: var(--wb-mono);
+  padding: 2px var(--space-1);
+  border-radius: var(--radius-xs);
+  transition: background var(--duration-fast) var(--ease-default),
+              color var(--duration-fast) var(--ease-default),
+              border-color var(--duration-fast) var(--ease-default);
   cursor: text;
 }
 
@@ -250,105 +210,82 @@ tr[data-duplicate="true"] td {
 
 .fnameStem.modified {
   color: var(--wb-amber);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .fnameExt {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
   color: var(--wb-txt3);
   flex-shrink: 0;
 }
 
 .loadingPip {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
+  width: var(--size-pip);
+  height: var(--size-pip);
+  border-radius: var(--radius-full);
   background: var(--wb-txt3);
   opacity: 0.35;
   flex-shrink: 0;
   align-self: center;
 }
 
-/* Data cells — prototype .cell-ver, .cv, .cv.pos */
+/* Data cells */
 .cellVer,
-.cellDate {
-  width: 110px;
-}
+.cellDate   { width: 110px; }
 
 .cellGlyphs,
 .cellFeat,
-.cellSize {
-  text-align: right;
-  padding-right: 18px;
-}
+.cellSize   { text-align: right; padding-right: var(--space-4); }
 
-.cellGlyphs {
-  width: 72px;
-}
-
-.cellFeat {
-  width: 60px;
-}
-
-.cellSize {
-  width: 72px;
-}
-
-.cellType {
-  width: 52px;
-}
+.cellGlyphs { width: 72px; }
+.cellFeat   { width: 60px; }
+.cellSize   { width: 72px; }
+.cellType   { width: 52px; }
 
 .cv {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
   color: var(--wb-txt2);
   white-space: nowrap;
 }
 
-.cvPos {
-  color: var(--wb-green);
-}
+.cvPos { color: var(--wb-green); }
 
-/* Type badges — prototype .type-badge .t-otf etc */
+/* Type badges */
 .typeBadge {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 9px;
-  font-weight: 600;
-  padding: 1px 5px;
-  border-radius: 3px;
-  letter-spacing: 0.04em;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: var(--font-weight-semibold);
+  padding: 1px var(--space-1);
+  border-radius: var(--radius-xs);
+  letter-spacing: var(--tracking-wide);
 }
 
 .typeTtf {
-  background: #112030;
-  color: #5aabff;
-  border: 1px solid #1a3a60;
+  background: var(--primitive-blue-bg);
+  color:  var(--primitive-blue-fg);
+  border: 1px solid  var(--primitive-blue-border);
 }
 
 .typeOtf {
-  background: #0e2018;
-  color: #3dd68c;
-  border: 1px solid #1a4030;
+  background: var(--primitive-green-bg);
+  color: var(--primitive-green-fg);
+  border: 1px solid var(--primitive-green-border);
 }
 
-.typeWoff {
-  background: #1e1030;
-  color: #b088ff;
-  border: 1px solid #3a1a70;
-}
-
+.typeWoff,
 .typeWoff2 {
-  background: #1e1030;
-  color: #b088ff;
-  border: 1px solid #3a1a70;
+  background: var(--primitive-violet-bg);
+  color: var(--primitive-violet-fg);
+  border: 1px solid var(--primitive-violet-border);
 }
 
 .fileBtn {
   padding: 0;
   border: none;
   background: none;
-  color: var(--color-text);
+  color: var(--wb-txt);
   font: inherit;
   cursor: pointer;
   text-align: left;
@@ -363,22 +300,22 @@ tr[data-duplicate="true"] td {
   min-width: 8rem;
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
-  background: var(--color-bg-elevated);
-  color: var(--color-text);
+  border: 1px solid var(--wb-border);
+  background: var(--wb-bg2);
+  color: var(--wb-txt);
   font: inherit;
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   font-family: var(--font-mono);
 }
 
 .renameInput:focus {
-  outline: 2px solid var(--color-accent-muted);
+  outline: 2px solid var(--wb-border2);
   outline-offset: 0;
 }
 
 .muted {
-  color: var(--color-text-muted);
-  font-size: 0.875rem;
+  color: var(--wb-txt2);
+  font-size: var(--text-md);
 }
 
 .cellActions {
@@ -391,10 +328,10 @@ tr[data-duplicate="true"] td {
 .queueBtnDanger {
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
-  background: var(--color-bg-elevated);
-  color: var(--color-text);
-  font-size: 0.75rem;
+  border: 1px solid var(--wb-border);
+  background: var(--wb-bg2);
+  color: var(--wb-txt);
+  font-size: var(--text-sm);
   cursor: pointer;
 }
 
@@ -410,62 +347,44 @@ tr[data-duplicate="true"] td {
 }
 
 .queueBtnDanger {
-  border-color: oklch(65% 0.18 25);
-  color: oklch(55% 0.18 25);
+  border-color: var(--wb-red);
+  color: var(--wb-red);
 }
 
 .queueBtnDanger:hover:not(:disabled) {
-  border-color: oklch(55% 0.2 25);
+  border-color: var(--wb-red);
+  background: var(--wb-red-bg);
 }
 
-.actionDefault,
-.action_SKIP,
-.action_UPGRADE,
-.action_REVIEW,
-.action_NEW,
-.action_CONFLICT,
-.action_PROBLEM {
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.action_SKIP {
-  color: var(--color-text-muted);
-}
-.action_UPGRADE {
-  color: oklch(50% 0.15 145);
-}
-.action_REVIEW {
-  color: oklch(60% 0.15 85);
-}
-.action_NEW {
-  color: var(--color-accent);
-}
-.action_CONFLICT,
-.action_PROBLEM {
-  color: oklch(55% 0.2 25);
-}
+/* Action state labels */
+.actionDefault   { font-size: var(--text-sm); font-weight: var(--font-weight-medium); }
+.action_SKIP     { color: var(--primitive-neutral-40); }
+.action_UPGRADE  { color: var(--primitive-green-bg);   }
+.action_REVIEW   { color: var(--primitive-blue-bg);    }
+.action_NEW      { color: var(--primitive-violet-bg);  }
+.action_CONFLICT { color: var(--primitive-amber-bg);   }
+.action_PROBLEM  { color: var(--primitive-red-bg);     }
 
 .empty {
   flex: 1;
   padding: var(--space-xl);
-  color: var(--color-text-muted);
-  font-size: 0.875rem;
+  color: var(--wb-txt2);
+  font-size: var(--text-md);
   overflow: auto;
 }
 
-/* Processed section — second sticky header row and dimmed rows */
+/* Processed section */
 .sectionHeaderRow {
   min-width: 0;
-  background: var(--wb-bg);
+  background: var(--wb-bg2);
   border-bottom: 1px solid var(--wb-border);
   border-top: 1px solid var(--wb-border2);
-  padding: 6px 14px;
+  padding: var(--space-1) var(--space-3);
   height: auto;
   vertical-align: middle;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .processedSection tr {
@@ -481,24 +400,27 @@ tr[data-duplicate="true"] td {
 }
 
 .countMatch {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 9px;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
   color: var(--wb-green);
-  margin-left: 8px;
+  margin-left: var(--space-2);
 }
 
 .countMismatch {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 9px;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
   color: var(--wb-amber);
-  margin-left: 8px;
+  margin-left: var(--space-2);
 }
 
-/* Inline Remove in filename cell */
+/* Inline filename cell */
 .cellNameWrap {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1);
   min-width: 0;
   flex: 1;
 }
@@ -509,13 +431,13 @@ tr[data-duplicate="true"] td {
 }
 
 .inlineRemove {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 10px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   color: var(--wb-red);
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0 4px;
+  padding: 0 var(--space-1);
 }
 
 .inlineRemove:hover {

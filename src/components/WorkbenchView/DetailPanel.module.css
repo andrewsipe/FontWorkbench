@@ -1,482 +1,520 @@
-/* Bottom detail panel — prototype .detail-panel, collapsible, tabs Compare / Features / Glyphs */
+/* Bottom detail panel */
 
 .panel {
-  height: 330px;
-  background: var(--wb-bg2);
-  border-top: 2px solid var(--wb-border2);
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  transition: height 0.2s ease;
+	height: var(--layout-detail-h);
+	background: var(--wb-bg2);
+	border-top: 2px solid var(--wb-border2);
+	display: flex;
+	flex-direction: column;
+	flex-shrink: 0;
+	transition: height var(--duration-slow) var(--ease-default);
 }
 
 .panel.collapsed {
-  height: 36px;
+	height: var(--layout-tab-h);
 }
 
 .tabs {
-  height: 36px;
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid var(--wb-border);
-  padding: 0 14px;
-  gap: 2px;
-  flex-shrink: 0;
+	height: var(--layout-tab-h);
+	display: flex;
+	align-items: center;
+	border-bottom: 1px solid var(--wb-border);
+	padding: 0 var(--space-3);
+	gap: var(--space-1);
+	flex-shrink: 0;
 }
 
 .tab {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 4px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  color: var(--wb-txt3);
-  border: 1px solid transparent;
-  transition: all 0.1s;
-  background: transparent;
+	font-family: var(--font-mono);
+	font-size: var(--text-2xs);
+	letter-spacing: var(--tracking-wide);
+	text-transform: uppercase;
+	padding: var(--space-1) var(--space-3);
+	border-radius: var(--radius-xs);
+	cursor: pointer;
+	color: var(--wb-txt3);
+	border: 1px solid transparent;
+	transition: all var(--duration-fast) var(--ease-default);
+	background: transparent;
 }
 
 .tab:hover {
-  color: var(--wb-txt2);
-  background: var(--wb-bg4);
+	color: var(--wb-txt2);
+	background: var(--wb-bg4);
 }
 
 .tabActive {
-  color: var(--wb-txt);
-  background: var(--wb-bg4);
-  border-color: var(--wb-border2);
+	color: var(--wb-txt);
+	background: var(--wb-bg4);
+	border-color: var(--wb-border2);
 }
 
 .selectedName {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 11px;
-  color: var(--wb-txt2);
-  margin-left: 12px;
-  padding-left: 12px;
-  border-left: 1px solid var(--wb-border);
+	font-family: var(--font-mono);
+	font-size: var(--text-sm);
+	color: var(--wb-txt2);
+	margin-left: var(--space-3);
+	padding-left: var(--space-3);
+	border-left: 1px solid var(--wb-border);
 }
 
 .toggle {
-  margin-left: auto;
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 10px;
-  color: var(--wb-txt3);
-  cursor: pointer;
-  padding: 3px 8px;
-  border-radius: 3px;
-  background: transparent;
-  border: none;
-  transition: all 0.1s;
+	margin-left: auto;
+	font-family: var(--font-mono);
+	font-size: var(--text-xs);
+	color: var(--wb-txt3);
+	cursor: pointer;
+	padding: 3px var(--space-2);
+	border-radius: var(--radius-xs);
+	background: transparent;
+	border: none;
+	transition: all var(--duration-fast) var(--ease-default);
 }
 
 .toggle:hover {
-  color: var(--wb-txt2);
-  background: var(--wb-bg4);
+	color: var(--wb-txt2);
+	background: var(--wb-bg4);
+}
+
+/* Fixed legend bar: one row below tabs, always visible when panel expanded and font selected */
+.legendBar {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--space-2) var(--space-4);
+	padding: var(--space-1) var(--space-3);
+	border-bottom: 1px solid var(--wb-border);
+	background: var(--wb-bg3);
+	font-family: var(--font-mono);
+	font-size: var(--text-2xs);
+	color: var(--wb-txt3);
+	text-transform: uppercase;
+	letter-spacing: var(--tracking-wider);
+	flex-shrink: 0;
+}
+
+.legendItem {
+	display: inline-flex;
+	align-items: baseline;
+	gap: var(--space-2);
+}
+
+.legendBarDivider {
+	width: 1px;
+	height: 1em;
+	background: var(--wb-border2);
+}
+
+.legendDot {
+	display: inline-block;
+	width: var(--space-2);
+	height: var(--space-2);
+	border-radius: 1px;
+	flex-shrink: 0;
+}
+
+.legendDotGreen {
+	background: var(--wb-green);
+}
+
+.legendDotRed {
+	background: var(--wb-red);
+}
+
+.legendDotBlue {
+	background: var(--wb-blue);
+}
+
+.legendDotAmber {
+	background: var(--wb-amber);
 }
 
 .content {
-  flex: 1;
-  overflow: hidden;
-  display: flex;
+	flex: 1;
+	overflow: hidden;
+	display: flex;
 }
 
 .panel.collapsed .content {
-  display: none;
+	display: none;
 }
 
-.placeholder {
-  padding: 1rem 1.5rem;
-  color: var(--wb-txt3);
-  font-size: 0.875rem;
-  margin: 0;
+.placeholder,
+.muted {
+	padding: var(--space-4) var(--space-6);
+	color: var(--wb-txt3);
+	font-size: var(--text-md);
+	margin: 0;
 }
 
 .muted {
-  color: var(--wb-txt3);
-  font-size: 0.8125rem;
-  margin: 0;
+	font-size: var(--text-sm);
+	padding: 0;
 }
 
-/* Compare tab */
+/* ── Compare tab ── */
 .tabCompare {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
+	flex: 1;
+	display: flex;
+	overflow: hidden;
 }
 
 .compareLeft,
 .compareRight {
-  flex: 1;
-  padding: 12px 16px;
-  overflow-y: auto;
-  border-right: 1px solid var(--wb-border);
+	flex: 1;
+	padding: var(--space-3) var(--space-4);
+	overflow-y: auto;
+	border-right: 1px solid var(--wb-border);
 }
 
 .compareRight {
-  border-right: none;
+	border-right: none;
 }
 
 .cmpLabel {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: var(--wb-txt3);
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+	font-family: var(--font-mono);
+	font-size: var(--text-2xs);
+	text-transform: uppercase;
+	letter-spacing: var(--tracking-wider);
+	color: var(--wb-txt3);
+	margin-bottom: var(--space-2);
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+}
+
+/* Chip base — shared border-radius and padding */
+.badgeLabel,
+.badgeSelected,
+.badgeMatched {
+	padding: 1px var(--space-1);
+	border-radius: var(--radius-xs);
+	font-size: var(--text-2xs);
+	font-family: var(--font-mono);
 }
 
 .badgeLabel {
-  background: var(--wb-bg4);
-  border: 1px solid var(--wb-border2);
-  padding: 1px 6px;
-  border-radius: 3px;
-  font-size: 9px;
-  color: var(--wb-txt2);
+	background: var(--wb-bg4);
+	border: 1px solid var(--wb-border2);
+	color: var(--wb-txt2);
 }
 
 .badgeSelected {
-  background: var(--wb-amber-bg);
-  border: 1px solid var(--wb-amber);
-  padding: 1px 6px;
-  border-radius: 3px;
-  font-size: 9px;
-  color: var(--wb-amber);
+	background: var(--primitive-amber-bg);
+	border: 1px solid var(--primitive-amber-border);
+	color: var(--primitive-amber-fg);
 }
 
 .badgeMatched {
-  background: var(--wb-bg4);
-  border: 1px solid var(--wb-border2);
-  padding: 1px 6px;
-  border-radius: 3px;
-  font-size: 9px;
-  color: var(--wb-txt2);
+	background: var(--wb-bg4);
+	border: 1px solid var(--wb-border2);
+	color: var(--wb-txt2);
 }
 
 .cmpFilename {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 12px;
-  color: var(--wb-txt);
-  margin-bottom: 10px;
-  word-break: break-all;
+	font-family: var(--font-mono);
+	font-size: var(--text-sm);
+	color: var(--wb-txt);
+	margin-bottom: var(--space-2);
+	word-break: break-all;
 }
 
 .cmpGrid {
-  display: grid;
-  grid-template-columns: 80px 1fr;
-  gap: 5px 10px;
-  margin-bottom: 12px;
+	display: grid;
+	grid-template-columns: 80px 1fr;
+	gap: var(--space-1) var(--space-2);
+	margin-bottom: var(--space-3);
 }
 
 .cgKey {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 10px;
-  color: var(--wb-txt3);
-  padding-top: 1px;
+	font-family: var(--font-mono);
+	font-size: var(--text-xs);
+	color: var(--wb-txt3);
+	padding-top: 1px;
 }
 
 .cgVal {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 11px;
-  color: var(--wb-txt2);
+	font-family: var(--font-mono);
+	font-size: var(--text-sm);
+	color: var(--wb-txt2);
 }
 
 .cgValHighlight {
-  color: var(--wb-green);
+	color: var(--wb-green);
 }
-
 .cgValWarn {
-  color: var(--wb-amber);
+	color: var(--wb-amber);
 }
-
 .cgValNeg {
-  color: var(--wb-red, #ff5e5e);
+	color: var(--wb-red);
 }
 
 .cmpTablesSection {
-  margin-top: 4px;
+	margin-top: var(--space-1);
 }
 
 .cmpTablesLabel {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: var(--wb-txt3);
-  margin-bottom: 6px;
+	font-family: var(--font-mono);
+	font-size: var(--text-2xs);
+	text-transform: uppercase;
+	letter-spacing: var(--tracking-wider);
+	color: var(--wb-txt3);
+	margin-bottom: var(--space-1);
 }
 
 .cmpTables {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-1);
 }
 
 .tblChipShared {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 9px;
-  padding: 2px 6px;
-  border-radius: 3px;
-  border: 1px solid #1a4030;
-  color: var(--wb-green);
-  background: var(--wb-green-bg);
+	font-family: var(--font-mono);
+	font-size: var(--text-2xs);
+	padding: 2px var(--space-1);
+	border-radius: var(--radius-xs);
+	background: var(--primitive-green-bg);
+	border: 1px solid var(--primitive-green-border);
+	color: var(--primitive-green-fg);
 }
 
 .tblChipOnly {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 9px;
-  padding: 2px 6px;
-  border-radius: 3px;
-  border: 1px solid #1a3a60;
-  color: var(--wb-blue);
-  background: var(--wb-blue-bg);
+	font-family: var(--font-mono);
+	font-size: var(--text-2xs);
+	padding: 2px var(--space-1);
+	border-radius: var(--radius-xs);
+	background: var(--primitive-blue-bg);
+	border: 1px solid var(--primitive-blue-border);
+	color: var(--primitive-blue-fg);
 }
 
-/* Features tab */
+/* ── Features tab ── */
 .tabFeatures {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
+	flex: 1;
+	display: flex;
+	overflow: hidden;
 }
 
 .featSide {
-  flex: 1;
-  padding: 12px 16px;
-  overflow-y: auto;
-  border-right: 1px solid var(--wb-border);
+	flex: 1;
+	padding: var(--space-3) var(--space-4);
+	overflow-y: auto;
+	border-right: 1px solid var(--wb-border);
 }
 
 .featSide:last-child {
-  border-right: none;
+	border-right: none;
 }
 
 .featLabel {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: var(--wb-txt3);
-  margin-bottom: 8px;
+	font-family: var(--font-mono);
+	font-size: var(--text-2xs);
+	text-transform: uppercase;
+	letter-spacing: var(--tracking-wider);
+	color: var(--wb-txt3);
+	margin-bottom: var(--space-2);
 }
 
 .featGrid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-1);
 }
 
 .featTag {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 10px;
-  padding: 3px 8px;
-  border-radius: 3px;
-  background: var(--wb-bg3);
-  border: 1px solid var(--wb-border2);
-  color: var(--wb-txt2);
+	font-family: var(--font-mono);
+	font-size: var(--text-xs);
+	padding: 3px var(--space-2);
+	border-radius: var(--radius-xs);
+	background: var(--wb-bg3);
+	border: 1px solid var(--wb-border2);
+	color: var(--wb-txt2);
 }
 
-.featTagShared {
-  background: var(--wb-green-bg);
-  border-color: #1a4030;
-  color: var(--wb-green);
-}
-
-.featTagOnly {
-  background: var(--wb-blue-bg);
-  border-color: #1a3a60;
-  color: var(--wb-blue);
-}
-
+.featTagShared,
 .chipShared {
-  background: var(--wb-green-bg);
-  border-color: #1a4030;
-  color: var(--wb-green);
+	background: var(--primitive-green-bg);
+	border: 1px solid var(--primitive-green-border);
+	color: var(--primitive-green-fg);
 }
 
+.featTagOnly,
 .chipOnlyUnprocessed {
-  background: var(--wb-blue-bg);
-  border-color: #1a3a60;
-  color: var(--wb-blue);
+	background: var(--primitive-blue-bg);
+	border: 1px solid var(--primitive-blue-border);
+	color: var(--primitive-blue-fg);
 }
 
 .chipOnlyProcessed {
-  background: var(--wb-amber-bg);
-  border-color: #3a2808;
-  color: var(--wb-amber);
+	background: var(--primitive-amber-bg);
+	border: 1px solid var(--primitive-amber-border);
+	color: var(--primitive-amber-fg);
 }
 
 .featNote {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 9px;
-  color: var(--wb-txt3);
-  margin-top: 10px;
-  margin-bottom: 0;
+	font-family: var(--font-mono);
+	font-size: var(--text-2xs);
+	color: var(--wb-txt3);
+	margin-top: var(--space-2);
+	margin-bottom: 0;
 }
 
 .featNoteDot {
-  color: var(--wb-blue);
+	color: var(--primitive-blue-bg);
 }
 
+/* ── Glyphs tab ── */
 .glyphGrid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px;
-  padding-bottom: 8px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2px;
+	padding-bottom: var(--space-2);
 }
 
 .glyphCell {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  color: var(--wb-txt);
-  border-radius: 3px;
-  cursor: default;
-  user-select: none;
-  flex-shrink: 0;
+	width: 28px;
+	height: 28px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: var(--text-lg);
+	color: var(--wb-txt);
+	border-radius: var(--radius-xs);
+	border: none;
+	background: transparent;
+	padding: 0;
+	cursor: default;
+	user-select: none;
+	flex-shrink: 0;
 }
 
 .glyphCell:hover {
-  background: var(--wb-bg4);
+	background: var(--wb-bg4);
 }
 
-/* Glyphs tab */
 .tabGlyphs {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
+	flex: 1;
+	display: flex;
+	overflow: hidden;
 }
 
 .glyphSide {
-  flex: 1;
-  padding: 12px 16px;
-  overflow-y: auto;
-  border-right: 1px solid var(--wb-border);
+	flex: 1;
+	padding: var(--space-3) var(--space-4);
+	overflow-y: auto;
+	border-right: 1px solid var(--wb-border);
 }
 
 .glyphSide:last-child {
-  border-right: none;
+	border-right: none;
 }
 
 .glyphLabel {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: var(--wb-txt3);
-  margin-bottom: 8px;
+	font-family: var(--font-mono);
+	font-size: var(--text-2xs);
+	text-transform: uppercase;
+	letter-spacing: var(--tracking-wider);
+	color: var(--wb-txt3);
+	margin-bottom: var(--space-2);
 }
 
 .glyphCellOnlyUnprocessed {
-  background: var(--wb-blue-bg, #0e2040);
-  color: var(--wb-blue, #4d9cff);
+	background: var(--primitive-blue-bg);
+	color: var(--primitive-blue-fg);
 }
 
 .glyphCellOnlyProcessed {
-  background: var(--wb-amber-bg, #2a1e06);
-  color: var(--wb-amber, #f5a623);
+	background: var(--primitive-amber-bg);
+	color: var(--primitive-amber-fg);
 }
 
 .glyphLegend {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 9px;
-  color: var(--wb-txt3);
-  margin: 6px 0 0;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+	font-family: var(--font-mono);
+	font-size: var(--text-2xs);
+	color: var(--wb-txt3);
+	margin: var(--space-1) 0 0;
+	display: flex;
+	align-items: center;
+	gap: var(--space-1);
 }
 
-.legendDotBlue {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  background: var(--wb-blue, #4d9cff);
-  flex-shrink: 0;
-}
-
-.legendDotAmber {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  background: var(--wb-amber, #f5a623);
-  flex-shrink: 0;
-}
-
+/* Glyph popover */
 .glyphPopover {
-  position: fixed;
-  min-width: 250px;
-  height: 155px;
-  bottom: 365px;
-  left: calc(110px + 50%);
-  transform: translateX(-50%);
-  z-index: 100;
-  background: #141517;
-  border: 1px solid #2e3033;
-  border-radius: 8px;
-  padding: 14px 20px;
-  box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  pointer-events: none;
+	position: fixed;
+	min-width: 250px;
+	height: 155px;
+	bottom: calc(var(--layout-detail-h) + var(--space-4) + var(--space-5));
+	left: calc(110px + 50%);
+	transform: translateX(-50%);
+	z-index: var(--z-popover);
+	background: var(--primitive-neutral-85);
+	border: 1px solid var(--wb-border2);
+	border-radius: var(--radius-md);
+	padding: var(--space-3) var(--space-5);
+	box-shadow: var(--shadow-dark-lg);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: var(--space-5);
+	pointer-events: none;
 }
 
 .popoverGlyphs {
-  display: flex;
-  gap: 25px;
-  align-items: flex-end;
+	display: flex;
+	gap: var(--space-6);
+	align-items: stretch;
 }
 
 .popoverSide {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--space-2);
+}
+
+/* Fixed-height slot so both glyphs share the same vertical band and align. */
+.popoverGlyphSlot {
+	height: 75px;
+	display: flex;
+	align-items: baseline;
+	justify-content: center;
+	flex-shrink: 0;
 }
 
 .popoverGlyph {
-  font-size: 72px;
-  line-height: 1;
-  color: #dde1e7;
-  display: block;
+	font-size: 72px;
+	line-height: 1;
+	color: var(--wb-txt);
+	display: block;
 }
 
 .popoverSideLabel {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 8px;
-  color: #454a52;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+	font-family: var(--font-mono);
+	font-size: var(--text-2xs);
+	color: var(--wb-txt2);
+	text-transform: uppercase;
+	letter-spacing: var(--tracking-wider);
 }
 
 .popoverMeta {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding-left: 16px;
-  border-left: 1px solid #252729;
-  align-self: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: var(--space-2);
+	padding-left: var(--space-4);
+	border-left: 1px solid var(--wb-border);
+	align-self: center;
 }
 
 .popoverCodepoint {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 10px;
-  color: #4d9cff;
+	font-family: var(--font-mono);
+	font-size: var(--text-xs);
+	color: var(--primitive-blue-bg);
 }
 
 .popoverName {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 9px;
-  color: #454a52;
-  text-transform: uppercase;
+	font-family: var(--font-mono);
+	font-size: var(--text-2xs);
+	color: var(--wb-txt2);
+	text-transform: uppercase;
 }

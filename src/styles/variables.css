@@ -1,44 +1,319 @@
 /**
- * Design tokens for Font Workbench.
- * OKLCH where useful; fallbacks for layout and typography.
+ * Design tokens — Font Workbench
+ *
+ * Color: OKLCH throughout.
+ *   Lightness (L): perceptually uniform 0–1
+ *   Chroma   (C): saturation; yellows/ambers need C ≥ 0.17 to avoid mud
+ *   Hue      (H): degrees
+ *
+ * Naming layers:
+ *   --primitive-*   raw OKLCH values, not consumed directly by components
+ *   --color-*       semantic aliases consumed by light-mode base components
+ *   --wb-*          workbench dark-theme overrides (defined in workbench-theme.css)
  */
 
+/* ─────────────────────────────────────────────
+   Fonts
+───────────────────────────────────────────── */
 @import url("https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap");
 
+/* ─────────────────────────────────────────────
+   Primitive palette  (referenced by semantic tokens; not consumed directly)
+───────────────────────────────────────────── */
 :root {
-  --accent-hue: 250;
-  --color-accent: oklch(65% 0.2 var(--accent-hue));
-  --color-accent-muted: oklch(75% 0.12 var(--accent-hue));
-  --color-text: oklch(25% 0.02 250);
-  --color-text-muted: oklch(45% 0.02 250);
-  --color-bg: oklch(98% 0.005 250);
-  --color-bg-elevated: oklch(100% 0 0);
-  --color-border: oklch(88% 0.01 250);
-  --color-border-strong: oklch(75% 0.02 250);
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --space-xs: 0.25rem;
-  --space-sm: 0.5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --font-sans: Geist, system-ui, -apple-system, sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, monospace;
-  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.06);
-  --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.08);
+	/* Neutrals — slight slate-blue undertone */
+	--primitive-neutral-white: oklch(100% 0 0);
+	--primitive-neutral-1:     oklch(99% 0 0);
+	--primitive-neutral-3:     oklch(97% 0 0);
+	--primitive-neutral-5:     oklch(95% 0 0);
+	--primitive-neutral-10:    oklch(90% 0 0);
+	--primitive-neutral-20:    oklch(80% 0 0);
+	--primitive-neutral-25:    oklch(75% 0 0);
+	--primitive-neutral-30:    oklch(70% 0 0);
+	--primitive-neutral-40:    oklch(60% 0 0);
+	--primitive-neutral-45:    oklch(55% 0 0);
+	--primitive-neutral-50:    oklch(50% 0 0);
+	--primitive-neutral-55:    oklch(45% 0 0);
+	--primitive-neutral-60:    oklch(40% 0 0);
+	--primitive-neutral-70:    oklch(30% 0 0);
+	--primitive-neutral-75:    oklch(25% 0 0);
+	--primitive-neutral-80:    oklch(20% 0 0);
+	--primitive-neutral-90:    oklch(10% 0 0);
+	--primitive-neutral-95:    oklch(5% 0 0);
+	--primitive-neutral-97:    oklch(3% 0 0);
+	--primitive-neutral-99:    oklch(1% 0 0);
+	--primitive-neutral-black: oklch(0% 0 0);
+
+	/* Accent — indigo/violet */
+	--primitive-accent-light:       oklch(66.7% 0.295 322.150);
+	--primitive-accent-muted-light: oklch(51.8% 0.253 323.949);
+	--primitive-accent-dark:        oklch(45.2% 0.211 324.591);
+	--primitive-accent-muted-dark:  oklch(29.3% 0.136 325.661);
+
+	/* Green — teal-green, workbench brand */
+	--primitive-green-border: oklch(90% 0.20 150);
+	--primitive-green-bg:     oklch(70% 0.18 155); /* ≈ #2dd4a0 */
+	--primitive-green-fg:     oklch(20% 0.09 160);
+
+	/* Amber — gold-orange; C ≥ 0.17 required to avoid muddy yellow at this lightness */
+	--primitive-amber-border: oklch(90% 0.22 65);
+	--primitive-amber-bg:     oklch(70% 0.20 65); /* ≈ #f5a623 */
+	--primitive-amber-fg:     oklch(20% 0.09 70);
+
+	/* Blue — sky blue */
+	--primitive-blue-border: oklch(90% 0.20 245);
+	--primitive-blue-bg:     oklch(70% 0.18 250); /* ≈ #4d9cff */
+	--primitive-blue-fg:     oklch(20% 0.09 255);
+
+	/* Red — warm red */
+	--primitive-red-border: oklch(90% 0.25 25);
+	--primitive-red-bg:     oklch(70% 0.23 26); /* ≈ #ff5e5e */
+	--primitive-red-fg:     oklch(20% 0.14 27);
+
+	/* Violet */
+	--primitive-violet-border: oklch(90% 0.22 290);
+	--primitive-violet-bg:     oklch(70% 0.20 295); /* ≈ #a78bfa */
+	--primitive-violet-fg:     oklch(20% 0.09 300);
+}
+
+/* ─────────────────────────────────────────────
+   Semantic color tokens  (light mode default)
+───────────────────────────────────────────── */
+:root {
+	--wb-txt: var(--primitive-neutral-70);
+	--wb-txt2: var(--primitive-neutral-50);
+	--wb-txt3: var(--primitive-neutral-30);
+
+	--wb-bg: var(--primitive-neutral-2);
+	--wb-bg2: var(--primitive-neutral-0);
+	--wb-bg3: var(--primitive-neutral-5);
+
+	--wb-border: var(--primitive-neutral-10);
+	--wb-border2: var(--primitive-neutral-20);
+
+	--color-accent: var(--primitive-accent-light);
+	--color-accent-muted: var(--primitive-accent-muted-light);
+
+	--color-success: var(--primitive-green-color);
+	--color-success-bg: var(--primitive-green-bg);
+	--color-warning: var(--primitive-amber-color);
+	--color-warning-bg: var(--primitive-amber-bg);
+	--color-info: var(--primitive-blue-color);
+	--color-info-bg: var(--primitive-blue-bg);
+	--color-danger: var(--primitive-red-color);
+	--color-danger-bg: var(--primitive-red-bg);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --color-text: oklch(92% 0.01 250);
-    --color-text-muted: oklch(65% 0.02 250);
-    --color-bg: oklch(18% 0.02 250);
-    --color-bg-elevated: oklch(22% 0.02 250);
-    --color-border: oklch(35% 0.02 250);
-    --color-border-strong: oklch(50% 0.02 250);
-    --color-accent: oklch(70% 0.18 var(--accent-hue));
-    --color-accent-muted: oklch(55% 0.12 var(--accent-hue));
-    --shadow-sm: 0 1px 2px oklch(0% 0 0 / 0.2);
-    --shadow-md: 0 4px 12px oklch(0% 0 0 / 0.25);
-  }
+	:root {
+		--wb-txt: var(--primitive-neutral-5);
+		--wb-txt2: var(--primitive-neutral-40);
+		--wb-txt3: var(--primitive-neutral-60);
+
+		--wb-bg: var(--primitive-neutral-85);
+		--wb-bg2: var(--primitive-neutral-80);
+		--wb-bg3: var(--primitive-neutral-90);
+
+		--wb-border: var(--primitive-neutral-70);
+		--wb-border2: var(--primitive-neutral-60);
+
+		--color-accent: var(--primitive-accent-dark);
+		--color-accent-muted: var(--primitive-accent-muted-dark);
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Typography
+───────────────────────────────────────────── */
+:root {
+	--font-sans: Geist, system-ui, -apple-system, sans-serif;
+	--font-mono: "Geist Mono", ui-monospace, monospace;
+
+	/* Size scale — minor third (×1.2) anchored at 13px UI base */
+	--text-2xs: 9px; /* labels, badges, uppercase tags      */
+	--text-xs: 10px; /* secondary mono labels               */
+	--text-sm: 11px; /* mono data cells, captions           */
+	--text-base: 13px; /* body / UI default                   */
+	--text-md: 14px; /* slightly larger body copy           */
+	--text-lg: 16px; /* section headings                    */
+	--text-xl: 20px; /* page headings                       */
+	--text-2xl: 24px; /* hero / display                      */
+
+	/* Weight */
+	--font-weight-normal: 400;
+	--font-weight-medium: 500;
+	--font-weight-semibold: 600;
+	--font-weight-bold: 700;
+
+	/* Line height */
+	--leading-tight: 1.1;
+	--leading-snug: 1.3;
+	--leading-normal: 1.5;
+	--leading-relaxed: 1.7;
+
+	/* Letter spacing */
+	--tracking-tight: -0.01em;
+	--tracking-normal: 0em;
+	--tracking-wide: 0.04em;
+	--tracking-wider: 0.08em;
+	--tracking-widest: 0.12em;
+}
+
+/* ─────────────────────────────────────────────
+   Spacing scale  (4px base grid)
+───────────────────────────────────────────── */
+:root {
+	--space-1: 4px;
+	--space-2: 8px;
+	--space-3: 12px;
+	--space-4: 16px;
+	--space-5: 20px;
+	--space-6: 24px;
+	--space-8: 32px;
+	--space-10: 40px;
+	--space-12: 48px;
+	--space-16: 64px;
+
+	/* Semantic aliases (back-compat + readability) */
+	--space-xs: var(--space-1); /*  4px */
+	--space-sm: var(--space-2); /*  8px */
+	--space-md: var(--space-4); /* 16px */
+	--space-lg: var(--space-6); /* 24px */
+	--space-xl: var(--space-8); /* 32px */
+	--space-2xl: var(--space-12); /* 48px */
+}
+
+/* ─────────────────────────────────────────────
+   Sizing — component heights, widths, icons
+───────────────────────────────────────────── */
+:root {
+	--size-icon-sm: 14px;
+	--size-icon-md: 18px;
+	--size-icon-lg: 22px;
+
+	--size-dot: 5px; /* status indicator dot */
+	--size-pip: 5px; /* loading state pip    */
+
+	--size-input-sm: 28px; /* compact input height  */
+	--size-input-md: 34px; /* standard input height */
+
+	/* Layout zones — can be overridden per-theme */
+	--layout-titlebar-h: 44px;
+	--layout-statusbar-h: 28px;
+	--layout-toolbar-h: 38px;
+	--layout-sidebar-w: 220px;
+	--layout-detail-h: 330px;
+	--layout-tab-h: 36px;
+	--layout-section-h: 28px; /* sticky section header rows */
+}
+
+/* ─────────────────────────────────────────────
+   Border radius
+───────────────────────────────────────────── */
+:root {
+	--radius-xs: 3px;
+	--radius-sm: 6px;
+	--radius-md: 8px;
+	--radius-lg: 12px;
+	--radius-xl: 16px;
+	--radius-full: 9999px;
+}
+
+/* ─────────────────────────────────────────────
+   Shadows
+───────────────────────────────────────────── */
+:root {
+	--shadow-xs: 0 1px 2px oklch(0% 0 0 / 0.05);
+	--shadow-sm: 0 1px 3px oklch(0% 0 0 / 0.08), 0 1px 2px oklch(0% 0 0 / 0.05);
+	--shadow-md: 0 4px 12px oklch(0% 0 0 / 0.1), 0 2px 4px oklch(0% 0 0 / 0.06);
+	--shadow-lg: 0 8px 24px oklch(0% 0 0 / 0.14), 0 4px 8px oklch(0% 0 0 / 0.08);
+	--shadow-xl: 0 16px 48px oklch(0% 0 0 / 0.2), 0 8px 16px oklch(0% 0 0 / 0.1);
+
+	/* Dark-surface variants with stronger contrast */
+	--shadow-dark-sm: 0 1px 3px oklch(0% 0 0 / 0.3);
+	--shadow-dark-md: 0 4px 12px oklch(0% 0 0 / 0.45);
+	--shadow-dark-lg: 0 8px 32px oklch(0% 0 0 / 0.65);
+}
+
+/* ─────────────────────────────────────────────
+   Transitions
+───────────────────────────────────────────── */
+:root {
+	--duration-fast: 80ms;
+	--duration-base: 150ms;
+	--duration-slow: 250ms;
+
+	--ease-default: ease;
+	--ease-out: cubic-bezier(0, 0, 0.2, 1);
+	--ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─────────────────────────────────────────────
+   Z-index scale
+───────────────────────────────────────────── */
+:root {
+	--z-below: -1;
+	--z-base: 0;
+	--z-raised: 1;
+	--z-sticky: 2; /* table column/section headers */
+	--z-header: 3; /* titlebar / main nav          */
+	--z-dropdown: 10;
+	--z-popover: 100;
+	--z-modal: 200;
+	--z-toast: 300;
+}
+
+.theme-workbench {
+	/* ── Surface backgrounds ── */
+	--wb-bg: var(--primitive-neutral-93); /* deepest — page canvas     */
+	--wb-bg2: var(--primitive-neutral-90); /* titlebar / sidebar        */
+	--wb-bg3: var(--primitive-neutral-85); /* input backgrounds         */
+	--wb-bg4: var(--primitive-neutral-80); /* hover / selected surfaces */
+
+	/* ── Borders ── */
+	--wb-border: var(--primitive-neutral-70); /* subtle dividers    */
+	--wb-border2: var(--primitive-neutral-60); /* stronger dividers  */
+
+	/* ── Text ── */
+	--wb-txt: var(--primitive-neutral-2); /* primary            */
+	--wb-txt2: var(--primitive-neutral-20); /* secondary / labels */
+	--wb-txt3: var(--primitive-neutral-60); /* dimmed / decorative */
+	--wb-mono: var(--primitive-neutral-10); /* monospace cell text */
+
+	/* ── Brand / status colors ──
+     Each resolves to a primitive defined in variables.css.
+     Amber chroma is kept ≥ 0.19 at hue 62° to stay vivid gold,
+     not muddy yellow. ── */
+	--wb-green: var(--primitive-green-bg);
+	--wb-green-bg: var(--primitive-green-fg);
+
+	--wb-amber: var(--primitive-amber-bg);
+	--wb-amber-bg: var(--primitive-amber-fg);
+
+	--wb-blue: var(--primitive-blue-bg);
+	--wb-blue-bg: var(--primitive-blue-fg);
+
+	--wb-red: var(--primitive-red-bg);
+	--wb-red-bg: var(--primitive-red-fg);
+
+	--wb-violet: var(--primitive-violet-bg);
+	--wb-violet-bg: var(--primitive-violet-fg);
+
+	/* ── Row states ── */
+	--wb-selection-bg:     var(--primitive-neutral-85);
+	--wb-selection-border: oklch(80% 0.35 323);
+  --wb-dup-bg:     var(--primitive-neutral-85);
+	--wb-dup-border: oklch(80% 0.35 92);
+
+	/* ── Layout dimensions (alias --layout-* for local convenience) ── */
+	--wb-titlebar-h: var(--layout-titlebar-h);
+	--wb-statusbar-h: var(--layout-statusbar-h);
+	--wb-sidebar-w: var(--layout-sidebar-w);
+}
+
+/* ── Base reset ── */
+.theme-workbench,
+.theme-workbench .workbenchRoot {
+	background: var(--primitive-neutral-99);
+	color: var(--primitive-neutral-0);
 }

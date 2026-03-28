@@ -1,8 +1,8 @@
-/* Setup view — workbench theme (use .theme-workbench on parent) */
+/* Setup view */
 
 .setup {
-  background: var(--color-bg, #0f1012);
-  color: var(--color-text, #dde1e7);
+  background: var(--wb-bg);
+  color: var(--wb-txt);
   font-family: var(--font-sans);
   min-height: 100vh;
   display: flex;
@@ -11,53 +11,53 @@
 }
 
 .card {
-  background: var(--color-bg-elevated, #141517);
-  border: 1px solid var(--color-border, #252729);
-  border-radius: 10px;
-  padding: 36px 40px;
+  background: var(--wb-bg2);
+  border: 1px solid var(--wb-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-8) var(--space-10);
   width: 480px;
 }
 
 .title {
   font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
-  color: var(--color-text, #dde1e7);
-  margin-bottom: 4px;
+  color: var(--wb-txt);
+  margin-bottom: var(--space-1);
 }
 
 .subtitle {
   font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--wb-txt3, #454a52);
-  margin-bottom: 32px;
+  font-size: var(--text-xs);
+  color: var(--wb-txt3);
+  margin-bottom: var(--space-8);
 }
 
 .section {
-  margin-bottom: 24px;
+  margin-bottom: var(--space-6);
 }
 
 .sectionTitle {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: var(--text-2xs);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--wb-txt3, #454a52);
-  margin-bottom: 8px;
+  letter-spacing: var(--tracking-widest);
+  color: var(--wb-txt3);
+  margin-bottom: var(--space-2);
 }
 
 .dirName {
   font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--wb-txt2, #7f8590);
-  margin-bottom: 8px;
+  font-size: var(--text-sm);
+  color: var(--wb-txt2);
+  margin-bottom: var(--space-2);
 }
 
 .meta {
-  font-size: 0.875rem;
-  color: var(--wb-txt2, #7f8590);
+  font-size: var(--text-md);
+  color: var(--wb-txt2);
   margin: 0 0 var(--space-md);
 }
 
@@ -69,35 +69,36 @@
 }
 
 .btn {
-  background: var(--wb-bg4, #1e2023);
-  border: 1px solid var(--color-border-strong, #2e3033);
+  background: var(--wb-bg4);
+  border: 1px solid var(--wb-border2);
   border-radius: var(--radius-md);
-  padding: 7px 14px;
+  padding: 7px var(--space-3);
   font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--wb-txt2, #7f8590);
+  font-size: var(--text-sm);
+  color: var(--wb-txt2);
   cursor: pointer;
-  transition: all 0.1s;
+  transition: background var(--duration-base) var(--ease-default),
+              color var(--duration-base) var(--ease-default);
 }
 
 .btn:hover {
-  background: var(--wb-bg3, #191b1e);
-  color: var(--color-text, #dde1e7);
+  background: var(--wb-bg3);
+  color: var(--wb-txt);
 }
 
 .btnPrimary {
-  background: var(--wb-green, #2dd4a0);
+  background: var(--wb-green);
   border: none;
   border-radius: var(--radius-md);
-  padding: 9px 20px;
+  padding: var(--space-2) var(--space-5);
   font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--color-bg, #0f1012);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--wb-bg);
   cursor: pointer;
   width: 100%;
-  margin-top: 8px;
-  transition: opacity 0.1s;
+  margin-top: var(--space-2);
+  transition: opacity var(--duration-base) var(--ease-default);
 }
 
 .btnPrimary:hover {
@@ -110,45 +111,47 @@
 }
 
 .dropZone {
-  border: 1px dashed var(--color-border-strong, #2e3033);
+  border: 1px dashed var(--wb-border2);
   border-radius: var(--radius-md);
-  padding: 20px;
+  padding: var(--space-5);
   text-align: center;
   cursor: pointer;
-  transition: all 0.15s;
-  color: var(--wb-txt3, #454a52);
+  transition: border-color var(--duration-base) var(--ease-default),
+              color var(--duration-base) var(--ease-default),
+              background var(--duration-base) var(--ease-default);
+  color: var(--wb-txt3);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--text-sm);
 }
 
 .dropZone:hover,
 .dropZone.dragOver {
-  border-color: var(--wb-green, #2dd4a0);
-  color: var(--wb-txt2, #7f8590);
-  background: var(--wb-green-bg, #0d2e22);
+  border-color: var(--wb-green);
+  color: var(--wb-txt2);
+  background: var(--wb-green-bg);
 }
 
 .dropZone.hasDir {
   border-style: solid;
-  border-color: var(--color-border, #252729);
-  color: var(--wb-txt2, #7f8590);
+  border-color: var(--wb-border);
+  color: var(--wb-txt2);
 }
 
 .status {
-  font-size: 0.875rem;
-  color: var(--wb-txt2, #7f8590);
+  font-size: var(--text-md);
+  color: var(--wb-txt2);
   margin: var(--space-md) 0 0;
 }
 
 .indexStatus {
   font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--wb-txt2, #7f8590);
-  margin-bottom: 8px;
+  font-size: var(--text-sm);
+  color: var(--wb-txt2);
+  margin-bottom: var(--space-2);
 }
 
 .indexStatus a {
-  color: var(--wb-green, #2dd4a0);
+  color: var(--wb-green);
   text-decoration: none;
 }
 
@@ -161,14 +164,16 @@
   border: none;
   padding: 0;
   font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--wb-green, #2dd4a0);
+  font-size: var(--text-sm);
+  color: var(--wb-green);
   cursor: pointer;
   text-decoration: underline;
 }
+
 .linkButton:hover {
   opacity: 0.8;
 }
+
 .linkButton:disabled {
   opacity: 0.4;
   cursor: not-allowed;
@@ -176,11 +181,11 @@
 
 .reauthBanner {
   font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--wb-amber, #f5a623);
-  background: var(--wb-amber-bg, #2a1e06);
-  border: 1px solid #4a3008;
+  font-size: var(--text-sm);
+  color: var(--wb-amber);
+  background: var(--wb-amber-bg);
+  border: 1px solid var(--color-amber-border);
   border-radius: var(--radius-md);
-  padding: 8px 12px;
-  margin-bottom: 20px;
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-5);
 }

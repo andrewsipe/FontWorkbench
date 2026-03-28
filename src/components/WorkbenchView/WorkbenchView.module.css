@@ -1,4 +1,4 @@
-/* Prototype-aligned Workbench layout and titlebar */
+/* Workbench layout and titlebar */
 
 .workbench {
   display: flex;
@@ -6,43 +6,43 @@
   height: 100vh;
   background: var(--wb-bg);
   color: var(--wb-txt);
-  font-family: "Geist", var(--font-sans);
-  font-size: 13px;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
 }
 
 /* ── Titlebar ── */
 .titlebar {
-  height: var(--wb-titlebar-h, 44px);
+  height: var(--layout-titlebar-h);
   background: var(--wb-bg2);
   border-bottom: 1px solid var(--wb-border);
   display: flex;
   align-items: center;
-  padding: 0 18px;
-  gap: 20px;
+  padding: 0 var(--space-4);
+  gap: var(--space-5);
   flex-shrink: 0;
 }
 
 .logo {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-widest);
   color: var(--wb-txt);
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: var(--space-2);
 }
 
 .logoIcon {
-  width: 22px;
-  height: 22px;
+  width: var(--size-icon-lg);
+  height: var(--size-icon-lg);
   background: var(--wb-green);
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   display: grid;
   place-items: center;
-  font-size: 12px;
+  font-size: var(--text-sm);
   color: var(--wb-bg);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .tbDivider {
@@ -54,43 +54,44 @@
 .tbStats {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: var(--space-4);
 }
 
 .tbStat {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 11px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   color: var(--wb-txt3);
 }
 
 .tbStat strong {
   color: var(--wb-txt2);
-  font-weight: 400;
+  font-weight: var(--font-weight-normal);
 }
 
 .tbRight {
   margin-left: auto;
   display: flex;
-  gap: 8px;
+  gap: var(--space-2);
   align-items: center;
 }
 
 .tbProgress {
-  font-size: 11px;
+  font-size: var(--text-xs);
   color: var(--wb-txt3);
-  margin-right: 4px;
+  margin-right: var(--space-1);
 }
 
 .btnGhost {
   background: var(--wb-bg4);
   border: 1px solid var(--wb-border2);
-  border-radius: 5px;
-  padding: 5px 12px;
-  font-family: "Geist", var(--font-sans);
-  font-size: 11px;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-3);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
   color: var(--wb-txt2);
   cursor: pointer;
-  transition: all 0.12s;
+  transition: background var(--duration-base) var(--ease-default),
+              color var(--duration-base) var(--ease-default);
 }
 
 .btnGhost:hover:not(:disabled) {
@@ -106,22 +107,22 @@
 .btnApply {
   background: var(--wb-amber);
   border: none;
-  border-radius: 5px;
-  padding: 6px 16px;
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: #0f0e0a;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-wide);
+  color: var(--wb-bg);
   cursor: pointer;
-  transition: background 0.12s;
+  transition: opacity var(--duration-base) var(--ease-default);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1);
 }
 
 .btnApply:hover:not(:disabled) {
-  background: #fbb740;
+  opacity: 0.88;
 }
 
 .btnApply:disabled {
@@ -131,23 +132,19 @@
 .btnApplyIdle {
   background: var(--wb-bg4);
   border: 1px solid var(--wb-border2);
-  border-radius: 5px;
-  padding: 6px 16px;
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 11px;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   color: var(--wb-txt3);
   cursor: default;
 }
 
-.btnApplyIdle:hover {
-  background: var(--wb-bg4);
-}
-
 .applyBadge {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-  padding: 1px 5px;
-  font-size: 10px;
+  background: oklch(0% 0 0 / 0.20);
+  border-radius: var(--radius-xs);
+  padding: 1px var(--space-1);
+  font-size: var(--text-2xs);
 }
 
 /* ── Main content ── */
@@ -159,7 +156,7 @@
 }
 
 .sidebar {
-  width: var(--wb-sidebar-w, 220px);
+  width: var(--layout-sidebar-w);
   min-width: 180px;
   min-height: 0;
   border-right: 1px solid var(--wb-border);
@@ -190,7 +187,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: var(--space-8);
   color: var(--wb-txt2);
   text-align: center;
 }

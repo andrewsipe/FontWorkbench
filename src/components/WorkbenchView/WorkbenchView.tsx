@@ -8,7 +8,7 @@ import ApplyBar from "./ApplyBar";
 import DetailPanel from "./DetailPanel";
 import FamilySidebar from "./FamilySidebar";
 import FileTable from "./FileTable";
-import "../../styles/workbench-theme.css";
+import "../../styles/variables.css";
 import styles from "./WorkbenchView.module.css";
 
 function WorkbenchView() {

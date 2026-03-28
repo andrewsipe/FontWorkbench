@@ -1,55 +1,91 @@
 /**
- * Prototype-aligned theme for Workbench view (dark, IDE-style).
- * Mirrors fontworkbench-prototype.html palette and typography.
+ * Workbench theme — dark, IDE-style.
+ * All color values reference primitives from variables.css.
+ * Apply .theme-workbench to the root workbench element.
  */
+
 .theme-workbench {
-	--wb-bg: #0f1012;
-	--wb-bg2: #141517;
-	--wb-bg3: #191b1e;
-	--wb-bg4: #1e2023;
-	--wb-border: #252729;
-	--wb-border2: #2e3033;
-	--wb-txt: #dde1e7;
-	--wb-txt2: #7f8590;
-	--wb-txt3: #454a52;
-	--wb-mono: #c5cad3;
+	/* ── Surface backgrounds ── */
+	--wb-bg: var(--primitive-neutral-93); /* deepest — page canvas     */
+	--wb-bg2: var(--primitive-neutral-90); /* titlebar / sidebar        */
+	--wb-bg3: var(--primitive-neutral-85); /* input backgrounds         */
+	--wb-bg4: var(--primitive-neutral-80); /* hover / selected surfaces */
 
-	--wb-green: #2dd4a0;
-	--wb-green-bg: #0d2e22;
-	--wb-amber: #f5a623;
-	--wb-amber-bg: #2a1e06;
-	--wb-blue: #4d9cff;
-	--wb-blue-bg: #0e2040;
-	--wb-red: #ff5e5e;
-	--wb-red-bg: #2a0e0e;
-	--wb-violet: #a78bfa;
-	--wb-violet-bg: #1e1030;
+	/* ── Borders ── */
+	--wb-border: var(--primitive-neutral-70); /* subtle dividers    */
+	--wb-border2: var(--primitive-neutral-60); /* stronger dividers  */
 
-	/* Row states: selection (blue) vs duplicate/conflict (amber) */
-	--wb-selection-bg: #142461;
-	--wb-selection-border: #345cfa;
-	--wb-dup-bg: #191401;
-	--wb-dup-border: #fad234;
+	/* ── Text ── */
+	--wb-txt: var(--primitive-neutral-2); /* primary            */
+	--wb-txt2: var(--primitive-neutral-20); /* secondary / labels */
+	--wb-txt3: var(--primitive-neutral-60); /* dimmed / decorative */
+	--wb-mono: var(--primitive-neutral-10); /* monospace cell text */
 
-	--wb-titlebar-h: 44px;
-	--wb-statusbar-h: 28px;
-	--wb-sidebar-w: 220px;
+	/* ── Brand / status colors ──
+     Each resolves to a primitive defined in variables.css.
+     Amber chroma is kept ≥ 0.19 at hue 62° to stay vivid gold,
+     not muddy yellow. ── */
+	--wb-green: var(--primitive-green-500); /* oklch(71% 0.19 168) */
+	--wb-green-bg: var(--primitive-green-bg); /* oklch(22% 0.07 168) */
+
+	--wb-amber: var(--primitive-amber-500); /* oklch(72% 0.19  62) */
+	--wb-amber-bg: var(--primitive-amber-bg); /* oklch(18% 0.06  62) */
+
+	--wb-blue: var(--primitive-blue-500); /* oklch(65% 0.18 230) */
+	--wb-blue-bg: var(--primitive-blue-bg); /* oklch(19% 0.07 240) */
+
+	--wb-red: var(--primitive-red-500); /* oklch(62% 0.23  25) */
+	--wb-red-bg: var(--primitive-red-bg); /* oklch(18% 0.08  25) */
+
+	--wb-violet: var(--primitive-violet-500); /* oklch(68% 0.20 295) */
+	--wb-violet-bg: var(--primitive-violet-bg); /* oklch(19% 0.07 295) */
+
+	/* ── Row states ── */
+	--wb-selection-bg: var(--primitive-blue-bg); /* blue tint  */
+	--wb-selection-border: var(--primitive-blue-500); /* blue edge  */
+	--wb-dup-bg: var(--primitive-amber-bg); /* amber tint */
+	--wb-dup-border: var(--primitive-amber-border); /* amber edge */
+
+	/* ── Layout dimensions (alias --layout-* for local convenience) ── */
+	--wb-titlebar-h: var(--layout-titlebar-h);
+	--wb-statusbar-h: var(--layout-statusbar-h);
+	--wb-sidebar-w: var(--layout-sidebar-w);
 }
 
+/* ── Base reset ── */
 .theme-workbench,
 .theme-workbench .workbenchRoot {
 	background: var(--wb-bg);
 	color: var(--wb-txt);
 }
 
-/* Map global tokens to prototype palette so child components pick up dark theme */
+/* ── Map global semantic tokens → workbench palette ──
+   Components using --color-* automatically inherit the
+   dark workbench values without any per-file overrides.     */
 .theme-workbench {
 	--color-bg: var(--wb-bg);
 	--color-bg-elevated: var(--wb-bg2);
+	--color-bg-sunken: var(--wb-bg3);
+
 	--color-text: var(--wb-txt);
 	--color-text-muted: var(--wb-txt2);
+	--color-text-subtle: var(--wb-txt3);
+
 	--color-border: var(--wb-border);
 	--color-border-strong: var(--wb-border2);
+	--color-amber-border: var(--primitive-amber-border);
+
+	/* Workbench accent = amber (drives the Apply button + highlights) */
 	--color-accent: var(--wb-amber);
 	--color-accent-muted: var(--wb-amber-bg);
+
+	/* Status pairs resolve through wb-* so both naming systems work */
+	--color-success: var(--wb-green);
+	--color-success-bg: var(--wb-green-bg);
+	--color-warning: var(--wb-amber);
+	--color-warning-bg: var(--wb-amber-bg);
+	--color-info: var(--wb-blue);
+	--color-info-bg: var(--wb-blue-bg);
+	--color-danger: var(--wb-red);
+	--color-danger-bg: var(--wb-red-bg);
 }

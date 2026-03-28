@@ -9,6 +9,7 @@ import { loadFontFile } from "../../engine/FontLoader";
 import { extractGlyphsFromFont, type GlyphInfo } from "../../lib/glyphExtraction";
 import type { IndexRecord } from "../../lib/indexBuilder";
 import { useWorkbenchStore } from "../../stores/workbenchStore";
+import { getCanvasFontStack, loadNotDefFallback } from "../../utils/notDefFontLoader";
 import type { CachedFont } from "../../types/font.types";
 import styles from "./DetailPanel.module.css";
 
@@ -108,6 +109,11 @@ function useInjectedFont(font: CachedFont | null): string | null {
 function DetailPanel() {
   const { unprocessedItems, selectedFontFilePath, matchResults, processedDirHandle } =
     useWorkbenchStore();
+
+  useEffect(() => {
+    // Load Adobe NotDef fallback once so missing glyphs render as a consistent .notdef.
+    void loadNotDefFallback();
+  }, []);
 
   const [collapsed, setCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState<DetailTab>("compare");
@@ -285,6 +291,51 @@ function DetailPanel() {
         </button>
       </div>
 
+      {!collapsed && selected && (
+        <section className={styles.legendBar} aria-label="Comparison legend">
+          {activeTab === "compare" && (
+            <>
+              <span className={styles.legendItem}>
+                <span className={`${styles.legendDot} ${styles.legendDotGreen}`} aria-hidden /> Higher
+              </span>
+              <span className={styles.legendItem}>
+                <span className={`${styles.legendDot} ${styles.legendDotRed}`} aria-hidden /> Lower
+              </span>
+              <span className={styles.legendBarDivider} aria-hidden />
+              <span className={styles.legendItem}>
+                <span className={`${styles.legendDot} ${styles.legendDotGreen}`} aria-hidden /> Tables: in both
+              </span>
+              <span className={styles.legendItem}>
+                <span className={`${styles.legendDot} ${styles.legendDotBlue}`} aria-hidden /> Only in selected
+              </span>
+            </>
+          )}
+          {activeTab === "features" && (
+            <>
+              <span className={styles.legendItem}>
+                <span className={`${styles.legendDot} ${styles.legendDotGreen}`} aria-hidden /> In both
+              </span>
+              <span className={styles.legendItem}>
+                <span className={`${styles.legendDot} ${styles.legendDotBlue}`} aria-hidden /> Only unprocessed
+              </span>
+              <span className={styles.legendItem}>
+                <span className={`${styles.legendDot} ${styles.legendDotAmber}`} aria-hidden /> Only processed
+              </span>
+            </>
+          )}
+          {activeTab === "glyphs" && (
+            <>
+              <span className={styles.legendItem}>
+                <span className={`${styles.legendDot} ${styles.legendDotBlue}`} aria-hidden /> Only in unprocessed
+              </span>
+              <span className={styles.legendItem}>
+                <span className={`${styles.legendDot} ${styles.legendDotAmber}`} aria-hidden /> Only in processed
+              </span>
+            </>
+          )}
+        </section>
+      )}
+
       {!collapsed && (
         <div className={styles.content}>
           {!selected ? (
@@ -350,10 +401,15 @@ function DetailPanel() {
                           {unprocessedGlyphs.map((glyph) => {
                             const presence = getGlyphPresence(glyph.unicodeNumber, processedCodepoints);
                             return (
-                              <div
-                                key={glyph.unicode}
+                              <button
+                                type="button"
+                                key={glyph.glyphIndex}
                                 className={`${styles.glyphCell} ${presence === "only-here" ? styles.glyphCellOnlyUnprocessed : ""}`}
-                                style={{ fontFamily: `"${injectedFontFamily}"` }}
+                                style={{
+                                  fontFamily: injectedFontFamily
+                                    ? getCanvasFontStack(injectedFontFamily)
+                                    : undefined,
+                                }}
                                 title={`${glyph.char}  ${glyph.unicode} — ${glyph.name}`}
                                 onMouseEnter={() => {
                                   cancelDismiss();
@@ -369,14 +425,10 @@ function DetailPanel() {
                                 onMouseLeave={scheduleDismiss}
                               >
                                 {glyph.char}
-                              </div>
+                              </button>
                             );
                           })}
                         </div>
-                        <p className={styles.glyphLegend}>
-                          <span className={styles.legendDotBlue} /> Only here &nbsp;
-                          <span className={styles.legendDotAmber} /> Not in this version
-                        </p>
                       </>
                     ) : !injectedFontFamily ? (
                       <p className={styles.muted}>Loading font…</p>
@@ -406,10 +458,15 @@ function DetailPanel() {
                           {processedGlyphs.map((glyph) => {
                             const presence = getGlyphPresence(glyph.unicodeNumber, unprocessedCodepoints);
                             return (
-                              <div
-                                key={glyph.unicode}
+                              <button
+                                type="button"
+                                key={glyph.glyphIndex}
                                 className={`${styles.glyphCell} ${presence === "only-here" ? styles.glyphCellOnlyProcessed : ""}`}
-                                style={{ fontFamily: `"${injectedProcessedFontFamily}"` }}
+                                style={{
+                                  fontFamily: injectedProcessedFontFamily
+                                    ? getCanvasFontStack(injectedProcessedFontFamily)
+                                    : undefined,
+                                }}
                                 title={`${glyph.char}  ${glyph.unicode} — ${glyph.name}`}
                                 onMouseEnter={() => {
                                   cancelDismiss();
@@ -425,14 +482,10 @@ function DetailPanel() {
                                 onMouseLeave={scheduleDismiss}
                               >
                                 {glyph.char}
-                              </div>
+                              </button>
                             );
                           })}
                         </div>
-                        <p className={styles.glyphLegend}>
-                          <span className={styles.legendDotBlue} /> Only here &nbsp;
-                          <span className={styles.legendDotAmber} /> Not in this version
-                        </p>
                       </>
                     )}
                     {!matchedRecord && !processedFontError && (
@@ -446,41 +499,51 @@ function DetailPanel() {
         </div>
       )}
     </section>
-    {popover && createPortal(
-      <div className={styles.glyphPopover}>
-        <div className={styles.popoverGlyphs}>
-          <div className={styles.popoverSide}>
-            <span
-              className={styles.popoverGlyph}
-              style={{ fontFamily: `"${popover.unprocessedFontFamily}"` }}
-            >
-              {popover.char}
-            </span>
-            <span className={styles.popoverSideLabel}>Unprocessed</span>
-          </div>
-          {popover.processedFontFamily && (
+    {popover &&
+      typeof document !== "undefined" &&
+      createPortal(
+        <div className={styles.glyphPopover}>
+          <div className={styles.popoverGlyphs}>
             <div className={styles.popoverSide}>
-              <span
-                className={styles.popoverGlyph}
-                style={{ fontFamily: `"${popover.processedFontFamily}"` }}
-              >
-                {popover.char}
-              </span>
-              <span className={styles.popoverSideLabel}>Processed</span>
+              <div className={styles.popoverGlyphSlot}>
+                <span
+                  className={styles.popoverGlyph}
+                  style={{
+                    fontFamily: getCanvasFontStack(popover.unprocessedFontFamily),
+                  }}
+                >
+                  {popover.char}
+                </span>
+              </div>
+              <span className={styles.popoverSideLabel}>Unprocessed</span>
             </div>
-          )}
-        </div>
-        <div className={styles.popoverMeta}>
-          <span className={styles.popoverCodepoint}>
-            U+{popover.codepoint.toString(16).toUpperCase().padStart(4, "0")}
-          </span>
-          {popover.name && (
-            <span className={styles.popoverName}>{popover.name}</span>
-          )}
-        </div>
-      </div>,
-      document.body
-    )}
+            {popover.processedFontFamily && (
+              <div className={styles.popoverSide}>
+                <div className={styles.popoverGlyphSlot}>
+                  <span
+                    className={styles.popoverGlyph}
+                    style={{
+                      fontFamily: getCanvasFontStack(popover.processedFontFamily),
+                    }}
+                  >
+                    {popover.char}
+                  </span>
+                </div>
+                <span className={styles.popoverSideLabel}>Processed</span>
+              </div>
+            )}
+          </div>
+          <div className={styles.popoverMeta}>
+            <span className={styles.popoverCodepoint}>
+              U+{popover.codepoint.toString(16).toUpperCase().padStart(4, "0")}
+            </span>
+            {popover.name && (
+              <span className={styles.popoverName}>{popover.name}</span>
+            )}
+          </div>
+        </div>,
+        document.body
+      )}
     </>
   );
 }

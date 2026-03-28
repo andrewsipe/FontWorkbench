@@ -3,7 +3,7 @@ import SetupView from "./components/SetupView";
 import WorkbenchView from "./components/WorkbenchView";
 import { useWorkbenchStore } from "./stores/workbenchStore";
 import "./App.css";
-import "./styles/workbench-theme.css";
+import "./styles/variables.css";
 
 function App() {
   const appView = useWorkbenchStore((s) => s.appView);

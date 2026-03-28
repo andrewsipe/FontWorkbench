@@ -1,9 +1,4 @@
-/**
- * Lists font families from unprocessed scan with search, sort, and status filter.
- * Selection filters the file table.
- */
-
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { SuggestedAction } from "../../lib/matcher";
 import type { UnprocessedItem } from "../../stores/workbenchStore";
 import { useWorkbenchStore } from "../../stores/workbenchStore";
@@ -20,11 +15,11 @@ const ACTION_SEVERITY: Record<SuggestedAction, number> = {
 
 const DOT_CLASS: Record<SuggestedAction, string> = {
   CONFLICT: styles.dotConflict,
-  PROBLEM: styles.dotProblem,
-  REVIEW: styles.dotReview,
-  UPGRADE: styles.dotUpgrade,
-  NEW: styles.dotNew,
-  SKIP: styles.dotSkip,
+  PROBLEM:  styles.dotProblem,
+  REVIEW:   styles.dotReview,
+  UPGRADE:  styles.dotUpgrade,
+  NEW:      styles.dotNew,
+  SKIP:     styles.dotSkip,
 };
 
 export function getFamilyStatus(
@@ -45,7 +40,7 @@ export function getFamilyStatus(
   return worst;
 }
 
-type SortBy = "alpha" | "count" | "status";
+type SortBy = "alpha-asc" | "alpha-desc" | "count-asc" | "count-desc" | "status";
 type FilterStatus = "all" | SuggestedAction;
 
 function getFilteredCount(
@@ -54,14 +49,49 @@ function getFilteredCount(
   filter: FilterStatus
 ): number {
   if (filter === "all") return items.length;
-  return items.filter((item) => matchResults.get(item.filePath)?.action === filter).length;
+  return items.filter((i) => matchResults.get(i.filePath)?.action === filter).length;
+}
+
+const STATUS_OPTIONS: { value: FilterStatus; label: string; dot: string }[] = [
+  { value: "all",      label: "All",      dot: styles.dotAll      },
+  { value: "CONFLICT", label: "Conflict", dot: styles.dotConflict },
+  { value: "REVIEW",   label: "Review",   dot: styles.dotReview   },
+  { value: "UPGRADE",  label: "Upgrade",  dot: styles.dotUpgrade  },
+  { value: "NEW",      label: "New",      dot: styles.dotNew      },
+  { value: "SKIP",     label: "Skip",     dot: styles.dotSkip     },
+  { value: "PROBLEM",  label: "Problem",  dot: styles.dotProblem  },
+];
+
+const SORT_OPTIONS: { value: SortBy; label: string; icon: string }[] = [
+  { value: "alpha-asc",  label: "Alpha",  icon: "🡇" },
+  { value: "alpha-desc", label: "Alpha",  icon: "🡅" },
+  { value: "count-desc", label: "Count",  icon: "🡇" },
+  { value: "count-asc",  label: "Count",  icon: "🡅" },
+  { value: "status",     label: "Status", icon: "⦿" },
+];
+
+function useDropdown() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+  return { open, setOpen, ref };
 }
 
 function FamilySidebar() {
   const { familyGroups, selectedFamily, selectFamily, matchResults } = useWorkbenchStore();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<SortBy>("alpha");
+  const [searchQuery, setSearchQuery]   = useState("");
+  const [sortBy, setSortBy]             = useState<SortBy>("alpha-asc");
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
+
+  const statusDropdown = useDropdown();
+  const sortDropdown   = useDropdown();
 
   const familyStatuses = useMemo(() => {
     const map = new Map<string, SuggestedAction>();
@@ -71,67 +101,114 @@ function FamilySidebar() {
     return map;
   }, [familyGroups, matchResults]);
 
-  const searchFiltered = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    const all = Array.from(familyGroups.keys());
-    return q ? all.filter((name) => name.toLowerCase().includes(q)) : all;
-  }, [familyGroups, searchQuery]);
-
-  const statusFiltered = useMemo(() => {
-    if (filterStatus === "all") return searchFiltered;
-    return searchFiltered.filter((name) => familyStatuses.get(name) === filterStatus);
-  }, [searchFiltered, filterStatus, familyStatuses]);
-
   const sortedFamilies = useMemo(() => {
-    const list = [...statusFiltered];
-    if (sortBy === "alpha") {
-      list.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
-    } else if (sortBy === "count") {
-      list.sort((a, b) => (familyGroups.get(b)?.length ?? 0) - (familyGroups.get(a)?.length ?? 0));
-    } else {
-      list.sort((a, b) => {
-        const sa = ACTION_SEVERITY[familyStatuses.get(a) ?? "SKIP"];
-        const sb = ACTION_SEVERITY[familyStatuses.get(b) ?? "SKIP"];
-        return sa !== sb ? sa - sb : a.localeCompare(b, undefined, { sensitivity: "base" });
-      });
-    }
-    return list;
-  }, [statusFiltered, sortBy, familyGroups, familyStatuses]);
+    const q = searchQuery.trim().toLowerCase();
+    let list = Array.from(familyGroups.keys());
+    if (q) list = list.filter((n) => n.toLowerCase().includes(q));
+    if (filterStatus !== "all")
+      list = list.filter((n) => familyStatuses.get(n) === filterStatus);
 
-  const isEmpty = familyGroups.size === 0;
+    list.sort((a, b) => {
+      if (sortBy === "alpha-asc")  return a.localeCompare(b, undefined, { sensitivity: "base" });
+      if (sortBy === "alpha-desc") return b.localeCompare(a, undefined, { sensitivity: "base" });
+      if (sortBy === "count-desc") return (familyGroups.get(b)?.length ?? 0) - (familyGroups.get(a)?.length ?? 0);
+      if (sortBy === "count-asc")  return (familyGroups.get(a)?.length ?? 0) - (familyGroups.get(b)?.length ?? 0);
+      // status
+      const sa = ACTION_SEVERITY[familyStatuses.get(a) ?? "SKIP"];
+      const sb = ACTION_SEVERITY[familyStatuses.get(b) ?? "SKIP"];
+      return sa !== sb ? sa - sb : a.localeCompare(b, undefined, { sensitivity: "base" });
+    });
+
+    return list;
+  }, [searchQuery, filterStatus, sortBy, familyGroups, familyStatuses]);
+
+  const isEmpty       = familyGroups.size === 0;
+  const activeStatus  = STATUS_OPTIONS.find((o) => o.value === filterStatus)!;
+  const activeSort    = SORT_OPTIONS.find((o) => o.value === sortBy)!;
 
   return (
     <div className={styles.sidebar}>
       <div className={styles.sidebarHeader}>
         <div className={styles.sidebarTitle}>Families</div>
+
         <div className={styles.toolRow}>
-          <select
-            className={styles.sortSelect}
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as FilterStatus)}
-            disabled={isEmpty}
-            aria-label="Filter by status"
-          >
-            <option value="all">All</option>
-            <option value="CONFLICT">Conflict</option>
-            <option value="REVIEW">Review</option>
-            <option value="UPGRADE">Upgrade</option>
-            <option value="NEW">New</option>
-            <option value="SKIP">Skip</option>
-            <option value="PROBLEM">Problem</option>
-          </select>
-          <select
-            className={styles.sortSelect}
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as SortBy)}
-            disabled={isEmpty}
-            aria-label="Sort families"
-          >
-            <option value="alpha">Alpha</option>
-            <option value="count">Count ↓</option>
-            <option value="status">Status</option>
-          </select>
+          {/* ── Status filter dropdown ── */}
+          <div className={styles.dropdownWrap} ref={statusDropdown.ref}>
+            <button
+              type="button"
+              className={styles.dropdownTrigger}
+              onClick={() => statusDropdown.setOpen((o) => !o)}
+              disabled={isEmpty}
+              aria-haspopup="listbox"
+              aria-expanded={statusDropdown.open}
+              aria-label="Filter by status"
+            >
+              <span className={`${styles.dropdownTriggerDot} ${activeStatus.dot}`} aria-hidden />
+              <span className={styles.dropdownTriggerLabel}>{activeStatus.label}</span>
+              <span className={styles.dropdownChevron} aria-hidden>▾</span>
+            </button>
+            {statusDropdown.open && (
+              <div className={styles.dropdownMenu} role="listbox">
+                {STATUS_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    role="option"
+                    aria-selected={filterStatus === opt.value}
+                    className={[
+                      styles.dropdownOption,
+                      filterStatus === opt.value ? styles.dropdownOptionActive : "",
+                    ].filter(Boolean).join(" ")}
+                    onClick={() => { setFilterStatus(opt.value); statusDropdown.setOpen(false); }}
+                  >
+                    <span className={`${styles.dropdownOptionDot} ${opt.dot}`} aria-hidden />
+                    {opt.label}
+                    <span className={styles.dropdownOptionCheck} aria-hidden>✓</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* ── Sort dropdown ── */}
+          <div className={styles.dropdownWrap} ref={sortDropdown.ref}>
+            <button
+              type="button"
+              className={styles.dropdownTrigger}
+              onClick={() => sortDropdown.setOpen((o) => !o)}
+              disabled={isEmpty}
+              aria-haspopup="listbox"
+              aria-expanded={sortDropdown.open}
+              aria-label="Sort families"
+            >
+              <span className={styles.dropdownTriggerLabel}>{activeSort.label}</span>
+              <span className={styles.dropdownTriggerIcon} aria-hidden>{activeSort.icon}</span>
+              <span className={styles.dropdownChevron} aria-hidden>▾</span>
+            </button>
+            {sortDropdown.open && (
+              <div className={styles.dropdownMenu} role="listbox">
+                {SORT_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    role="option"
+                    aria-selected={sortBy === opt.value}
+                    className={[
+                      styles.dropdownOption,
+                      sortBy === opt.value ? styles.dropdownOptionActive : "",
+                    ].filter(Boolean).join(" ")}
+                    onClick={() => { setSortBy(opt.value); sortDropdown.setOpen(false); }}
+                  >
+                    <span className={styles.dropdownTriggerIcon} aria-hidden>{opt.icon}</span>
+                    {opt.label}
+                    <span className={styles.dropdownOptionCheck} aria-hidden>✓</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
+
         <input
           type="search"
           className={styles.sidebarSearch}
@@ -142,17 +219,17 @@ function FamilySidebar() {
           disabled={isEmpty}
         />
       </div>
+
       <nav className={styles.familyList} aria-label="Font families">
         <ul className={styles.list}>
           {sortedFamilies.map((family) => {
-            const items = familyGroups.get(family) ?? [];
+            const items  = familyGroups.get(family) ?? [];
             const action = familyStatuses.get(family) ?? "SKIP";
             const isSelected = selectedFamily === family;
             const isDim = filterStatus === "all" && action === "SKIP";
-            const count =
-              filterStatus === "all"
-                ? items.length
-                : getFilteredCount(items, matchResults, filterStatus);
+            const count = filterStatus === "all"
+              ? items.length
+              : getFilteredCount(items, matchResults, filterStatus);
             return (
               <li key={family}>
                 <button
@@ -161,27 +238,22 @@ function FamilySidebar() {
                   className={[
                     styles.familyItem,
                     isSelected ? styles.familyItemActive : "",
-                    isDim ? styles.familyItemDim : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
+                    isDim      ? styles.familyItemDim    : "",
+                  ].filter(Boolean).join(" ")}
                   aria-pressed={isSelected}
                 >
                   <span className={`${styles.fiFlag} ${DOT_CLASS[action]}`} aria-hidden />
                   <span className={styles.fiName}>{family}</span>
-                  <span className={styles.fiCount} aria-hidden>
-                    {count}
-                  </span>
+                  <span className={styles.fiCount} aria-hidden>{count}</span>
                 </button>
               </li>
             );
           })}
         </ul>
       </nav>
+
       {isEmpty && (
-        <div className={styles.empty}>
-          <p>No families</p>
-        </div>
+        <div className={styles.empty}><p>No families</p></div>
       )}
       {!isEmpty && sortedFamilies.length === 0 && (
         <div className={styles.empty}>

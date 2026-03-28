@@ -1,33 +1,33 @@
-/* Status bar — prototype-aligned */
+/* Status bar */
 
 .statusbar {
-  height: var(--wb-statusbar-h, 28px);
-  background: #090a0b;
+  height: var(--layout-statusbar-h);
+  background: var(--wb-bg);
   border-top: 1px solid var(--wb-border);
   display: flex;
   align-items: center;
-  padding: 0 18px;
-  gap: 18px;
+  padding: 0 var(--space-4);
+  gap: var(--space-4);
   flex-shrink: 0;
 }
 
 .sb {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 10px;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
   color: var(--wb-txt3);
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: var(--space-1);
 }
 
 .sb strong {
   color: var(--wb-txt2);
-  font-weight: 400;
+  font-weight: var(--font-weight-normal);
 }
 
 .sbDot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
+  width: var(--size-dot);
+  height: var(--size-dot);
+  border-radius: var(--radius-full);
   flex-shrink: 0;
 }

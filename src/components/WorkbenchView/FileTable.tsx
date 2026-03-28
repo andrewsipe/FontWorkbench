@@ -487,9 +487,9 @@ function FileTable() {
                         {matchedProcessedRecords.length} files
                       </span>
                       {itemsToShow.length === matchedProcessedRecords.length ? (
-                        <span className={styles.sectionMatch}>✓ Count matches</span>
+                        <span className={styles.sectionMatch}>Count matches</span>
                       ) : (
-                        <span className={styles.countMismatch}>⚠ Count differs</span>
+                        <span className={styles.countMismatch}>Count differs</span>
                       )}
                     </td>
                   </tr>

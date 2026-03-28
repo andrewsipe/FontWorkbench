@@ -1,55 +1,56 @@
-/* Prototype-aligned table toolbar */
+/* Table toolbar */
 
 .toolbar {
-  height: 38px;
+  height: var(--layout-toolbar-h);
   background: var(--wb-bg2);
   border-bottom: 1px solid var(--wb-border);
   display: flex;
   align-items: center;
-  padding: 0 14px;
-  gap: 10px;
+  padding: 0 var(--space-3);
+  gap: var(--space-2);
   flex-shrink: 0;
 }
 
 .familyName {
-  font-family: "Geist", var(--font-sans);
-  font-size: 13px;
-  font-weight: 500;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
   color: var(--wb-txt);
 }
 
 .meta {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 10px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   color: var(--wb-txt3);
   display: flex;
-  gap: 12px;
+  gap: var(--space-3);
   align-items: center;
   flex-wrap: wrap;
 }
 
 .meta strong {
   color: var(--wb-txt2);
-  font-weight: 400;
+  font-weight: var(--font-weight-normal);
 }
 
 .right {
   margin-left: auto;
   display: flex;
-  gap: 6px;
+  gap: var(--space-1);
   align-items: center;
 }
 
 .selBtn {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 10px;
-  padding: 3px 9px;
-  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-xs);
   border: 1px solid var(--wb-border2);
   background: transparent;
   color: var(--wb-txt2);
   cursor: pointer;
-  transition: all 0.1s;
+  transition: background var(--duration-fast) var(--ease-default),
+              color var(--duration-fast) var(--ease-default);
 }
 
 .selBtn:hover:not(:disabled) {
@@ -63,15 +64,15 @@
 }
 
 .selBtnDanger {
-  font-family: "Geist Mono", var(--font-mono);
-  font-size: 10px;
-  padding: 3px 9px;
-  border-radius: 3px;
-  border: 1px solid #3d1010;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--wb-red-bg);
   background: transparent;
   color: var(--wb-red);
   cursor: pointer;
-  transition: all 0.1s;
+  transition: background var(--duration-fast) var(--ease-default);
 }
 
 .selBtnDanger:hover:not(:disabled) {
@@ -83,26 +84,10 @@
   cursor: not-allowed;
 }
 
-.statusConflict {
-  color: var(--wb-amber, #f5a623);
-}
-
-.statusProblem {
-  color: var(--wb-red, #ff5e5e);
-}
-
-.statusReview {
-  color: var(--wb-blue, #4a9eff);
-}
-
-.statusUpgrade {
-  color: var(--wb-green, #2dd4a0);
-}
-
-.statusNew {
-  color: var(--wb-violet, #a78bfa);
-}
-
-.statusSkip {
-  color: var(--wb-txt3);
-}
+/* Status text colors */
+.statusConflict { color: var(--wb-amber);  }
+.statusProblem  { color: var(--wb-red);    }
+.statusReview   { color: var(--wb-blue);   }
+.statusUpgrade  { color: var(--wb-green);  }
+.statusNew      { color: var(--wb-violet); }
+.statusSkip     { color: var(--wb-txt3);   }
