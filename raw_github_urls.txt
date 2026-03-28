@@ -4,6 +4,7 @@ https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/biome.json
 https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/index.html
 https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/package-lock.json
 https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/package.json
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/pnpm-lock.yaml
 https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/tsconfig.app.json
 https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/tsconfig.json
 https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/tsconfig.node.json
@@ -125,6 +126,7 @@ https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/types/wawoff
 # src/utils/
 https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/utils/debug.ts
 https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/utils/fontUtils.ts
+https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/utils/notDefFontLoader.ts
 https://raw.githubusercontent.com/andrewsipe/FontWorkbench/main/src/utils/woffDecompressor.ts
 
 # src/workers/
